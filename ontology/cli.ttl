@@ -1,0 +1,2200 @@
+@prefix tf: <https://terrafabric.world/ont#> .
+@prefix tfr: <https://terrafabric.world/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <https://schema.org/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+<https://terrafabric.world/ont/cli> a owl:Ontology ;
+    dct:description "Describes command-line programs for agents: commands, their inputs, side effects, required credentials, results and exit statuses, linked to the TerraFabric ontology's tools and classes." ;
+    dct:title "TerraFabric CLI Ontology" ;
+    owl:imports <https://terrafabric.world/ont> ;
+    owl:versionInfo "0.1.0" .
+
+tf:CliCommand a owl:Class ;
+    rdfs:comment "One invocable command line. Its inputs are tf:CliOption values; running it has one tf:SideEffect." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "CLI command" ;
+    rdfs:subClassOf schema:EntryPoint ;
+    tf:module "cli" .
+
+tf:CliCommandGroup a owl:Class ;
+    rdfs:comment "A named set of related subcommands (the first word after the program name)." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Command group" ;
+    rdfs:subClassOf skos:Collection ;
+    tf:module "cli" .
+
+tf:CliOption a owl:Class ;
+    rdfs:comment "A named input of a command, given as --flag VALUE. Maps to one key of the command's JSON input." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "CLI option" ;
+    rdfs:subClassOf schema:PropertyValueSpecification ;
+    tf:module "cli" .
+
+tf:CommandLineProgram a owl:Class ;
+    rdfs:comment "An executable with subcommands that agents and people invoke from a shell." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Command-line program" ;
+    rdfs:subClassOf schema:SoftwareApplication ;
+    tf:module "cli" .
+
+tf:CredentialRequirement a owl:Class ;
+    rdfs:comment "The credential a command needs." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Credential requirement" ;
+    rdfs:subClassOf skos:Concept ;
+    tf:module "cli" .
+
+tf:CredentialScheme a skos:ConceptScheme ;
+    skos:prefLabel "Credential requirements" .
+
+tf:EnvironmentVariable a owl:Class ;
+    rdfs:comment "A process environment variable the program reads." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Environment variable" ;
+    tf:module "cli" .
+
+tf:ExitStatus a owl:Class ;
+    rdfs:comment "A process exit code with a stable meaning agents can branch on." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Exit status" ;
+    tf:module "cli" .
+
+tf:GlobalOption a owl:Class ;
+    rdfs:comment "An option every command accepts." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Global option" ;
+    rdfs:subClassOf tf:CliOption ;
+    tf:module "cli" .
+
+tf:LocalCliCommand a owl:Class ;
+    rdfs:comment "A command implemented by the program itself (description, ontology, configuration, MCP serving)." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Local CLI command" ;
+    rdfs:subClassOf tf:CliCommand ;
+    tf:module "cli" .
+
+tf:OutputFormat a owl:Class ;
+    rdfs:comment "A serialisation of command results on stdout." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Output format" ;
+    rdfs:subClassOf skos:Concept ;
+    tf:module "cli" .
+
+tf:OutputFormatScheme a skos:ConceptScheme ;
+    skos:prefLabel "Output formats" .
+
+tf:RemoteCliCommand a owl:Class ;
+    rdfs:comment "A command that invokes a TerraFabric server tool (tf:Tool) over HTTPS." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Remote CLI command" ;
+    rdfs:subClassOf tf:CliCommand ;
+    tf:module "cli" .
+
+tf:SideEffect a owl:Class ;
+    rdfs:comment "What running a command changes, from nothing to committed spend." ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "Side effect" ;
+    rdfs:subClassOf skos:Concept ;
+    tf:module "cli" .
+
+tf:SideEffectScheme a skos:ConceptScheme ;
+    skos:prefLabel "Side effects" .
+
+tf:allowedValue a owl:DatatypeProperty ;
+    rdfs:comment "One permitted value of an enumerated option." ;
+    rdfs:domain tf:CliOption ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "allowed value" ;
+    rdfs:range xsd:string ;
+    tf:module "cli" .
+
+tf:argumentKey a owl:DatatypeProperty ;
+    rdfs:comment "The key the option sets in the JSON input sent to the tool." ;
+    rdfs:domain tf:CliOption ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "argument key" ;
+    rdfs:range xsd:string ;
+    tf:module "cli" .
+
+tf:commandLine a owl:DatatypeProperty ;
+    rdfs:comment "The words that invoke the command, e.g. 'tfab collections search'." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "command line" ;
+    rdfs:range xsd:string ;
+    tf:module "cli" .
+
+tf:credential-agent-identity a tf:CredentialRequirement ;
+    skos:definition "Acts for an agent identity (--agent-id or TFAB_AGENT_ID); spend is bounded by that agent's mandate." ;
+    skos:inScheme tf:CredentialScheme ;
+    skos:prefLabel "Agent identity" .
+
+tf:credential-mission-read a tf:CredentialRequirement ;
+    skos:definition "Mission API bearer credential with the read scope (TFAB_TOKEN, or OAuth client credentials)." ;
+    skos:inScheme tf:CredentialScheme ;
+    skos:prefLabel "Mission API, read scope" .
+
+tf:credential-mission-task a tf:CredentialRequirement ;
+    skos:definition "Mission API bearer credential with the task scope (TFAB_TOKEN, or OAuth client credentials)." ;
+    skos:inScheme tf:CredentialScheme ;
+    skos:prefLabel "Mission API, task scope" .
+
+tf:credential-none a tf:CredentialRequirement ;
+    skos:definition "Public; no credential is sent." ;
+    skos:inScheme tf:CredentialScheme ;
+    skos:prefLabel "No credential" .
+
+tf:credential-principal a tf:CredentialRequirement ;
+    skos:definition "Needs the principal token issued with the agent's mandate. Only the human principal holds it; an agent must never supply its own." ;
+    skos:inScheme tf:CredentialScheme ;
+    skos:prefLabel "Principal token" .
+
+tf:effect-commits-spend a tf:SideEffect ;
+    skos:definition "Commits money or tasks a sensor; the CLI refuses to run it without --yes." ;
+    skos:inScheme tf:SideEffectScheme ;
+    skos:prefLabel "Commits spend" .
+
+tf:effect-creates-state a tf:SideEffect ;
+    skos:definition "Creates or updates server-side state but commits no spend." ;
+    skos:inScheme tf:SideEffectScheme ;
+    skos:prefLabel "Creates state" .
+
+tf:effect-local a tf:SideEffect ;
+    skos:definition "Runs on the local machine without contacting the server." ;
+    skos:inScheme tf:SideEffectScheme ;
+    skos:prefLabel "Local only" .
+
+tf:effect-read-only a tf:SideEffect ;
+    skos:definition "Reads data and changes nothing; safe to retry or run speculatively." ;
+    skos:inScheme tf:SideEffectScheme ;
+    skos:prefLabel "Read only" .
+
+tf:envName a owl:DatatypeProperty ;
+    rdfs:comment "The variable's name." ;
+    rdfs:domain tf:EnvironmentVariable ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "environment variable name" ;
+    rdfs:range xsd:string ;
+    tf:module "cli" .
+
+tf:example a owl:DatatypeProperty ;
+    rdfs:comment "A complete, runnable example invocation." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "example" ;
+    rdfs:range xsd:string ;
+    tf:module "cli" .
+
+tf:exitCode a owl:DatatypeProperty ;
+    rdfs:comment "The numeric process exit code." ;
+    rdfs:domain tf:ExitStatus ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "exit code" ;
+    rdfs:range xsd:integer ;
+    tf:module "cli" .
+
+tf:hasCommand a owl:ObjectProperty ;
+    rdfs:comment "A command the program offers." ;
+    rdfs:domain tf:CommandLineProgram ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "has command" ;
+    rdfs:range tf:CliCommand ;
+    tf:module "cli" .
+
+tf:hasCommandGroup a owl:ObjectProperty ;
+    rdfs:comment "A command group of the program." ;
+    rdfs:domain tf:CommandLineProgram ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "has command group" ;
+    rdfs:range tf:CliCommandGroup ;
+    tf:module "cli" .
+
+tf:hasGlobalOption a owl:ObjectProperty ;
+    rdfs:comment "An option every command of the program accepts." ;
+    rdfs:domain tf:CommandLineProgram ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "has global option" ;
+    rdfs:range tf:GlobalOption ;
+    tf:module "cli" .
+
+tf:hasOption a owl:ObjectProperty ;
+    rdfs:comment "An input option of a command." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "has option" ;
+    rdfs:range tf:CliOption ;
+    tf:module "cli" .
+
+tf:hasSideEffect a owl:ObjectProperty ;
+    rdfs:comment "What running the command changes." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "has side effect" ;
+    rdfs:range tf:SideEffect ;
+    tf:module "cli" .
+
+tf:idempotent a owl:DatatypeProperty ;
+    rdfs:comment "True when repeating the command with the same input has no further effect." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "idempotent" ;
+    rdfs:range xsd:boolean ;
+    tf:module "cli" .
+
+tf:inCommandGroup a owl:ObjectProperty ;
+    rdfs:comment "The group a command belongs to." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "in command group" ;
+    rdfs:range tf:CliCommandGroup ;
+    tf:module "cli" .
+
+tf:inputSchema a owl:DatatypeProperty ;
+    rdfs:comment "JSON Schema of the command's input object." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "input schema" ;
+    rdfs:range rdf:JSON ;
+    tf:module "cli" .
+
+tf:invokesTool a owl:ObjectProperty ;
+    rdfs:comment "The server tool a remote command calls." ;
+    rdfs:domain tf:RemoteCliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "invokes tool" ;
+    rdfs:range tf:Tool ;
+    tf:module "cli" .
+
+tf:mayExitWith a owl:ObjectProperty ;
+    rdfs:comment "An exit status the command can end with." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "may exit with" ;
+    rdfs:range tf:ExitStatus ;
+    tf:module "cli" .
+
+tf:optionFlag a owl:DatatypeProperty ;
+    rdfs:comment "The long flag, without dashes." ;
+    rdfs:domain tf:CliOption ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "option flag" ;
+    rdfs:range xsd:string ;
+    tf:module "cli" .
+
+tf:output-json a tf:OutputFormat ;
+    skos:definition "One JSON document (the default when stdout is not a terminal)." ;
+    skos:inScheme tf:OutputFormatScheme ;
+    skos:prefLabel "json" .
+
+tf:output-ndjson a tf:OutputFormat ;
+    skos:definition "One JSON object per line: list results are streamed element by element." ;
+    skos:inScheme tf:OutputFormatScheme ;
+    skos:prefLabel "ndjson" .
+
+tf:output-text a tf:OutputFormat ;
+    skos:definition "Human-readable summary (the default on a terminal)." ;
+    skos:inScheme tf:OutputFormatScheme ;
+    skos:prefLabel "text" .
+
+tf:readsEnvironment a owl:ObjectProperty ;
+    rdfs:comment "An environment variable the program or option reads." ;
+    rdfs:domain rdfs:Resource ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "reads environment" ;
+    rdfs:range tf:EnvironmentVariable ;
+    tf:module "cli" .
+
+tf:requiresCredential a owl:ObjectProperty ;
+    rdfs:comment "The credential the command needs." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "requires credential" ;
+    rdfs:range tf:CredentialRequirement ;
+    tf:module "cli" .
+
+tf:retryable a owl:DatatypeProperty ;
+    rdfs:comment "True when retrying later can succeed." ;
+    rdfs:domain tf:ExitStatus ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "retryable" ;
+    rdfs:range xsd:boolean ;
+    tf:module "cli" .
+
+tf:returnsType a owl:ObjectProperty ;
+    rdfs:comment "The TerraFabric class of the command's result." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "returns type" ;
+    rdfs:range rdfs:Class ;
+    tf:module "cli" .
+
+tf:secret a owl:DatatypeProperty ;
+    rdfs:comment "True when the value is a credential: never echoed; pass as env:NAME or file:PATH." ;
+    rdfs:domain tf:CliOption ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "secret" ;
+    rdfs:range xsd:boolean ;
+    tf:module "cli" .
+
+tf:supportsFormat a owl:ObjectProperty ;
+    rdfs:comment "An output format the program can write." ;
+    rdfs:domain tf:CommandLineProgram ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "supports format" ;
+    rdfs:range tf:OutputFormat ;
+    tf:module "cli" .
+
+tf:usesNetwork a owl:DatatypeProperty ;
+    rdfs:comment "True when the command contacts the server." ;
+    rdfs:domain tf:CliCommand ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "uses network" ;
+    rdfs:range xsd:boolean ;
+    tf:module "cli" .
+
+tf:valueType a owl:ObjectProperty ;
+    rdfs:comment "Datatype of an option's value (rdf:JSON for structured values)." ;
+    rdfs:domain tf:CliOption ;
+    rdfs:isDefinedBy <https://terrafabric.world/ont/cli> ;
+    rdfs:label "value type" ;
+    rdfs:range rdfs:Datatype ;
+    tf:module "cli" .
+
+<https://terrafabric.world/id/cli/tfab> a tf:CommandLineProgram ;
+    schema:applicationCategory "DeveloperApplication" ;
+    schema:description "tfab: agent-first command line for TerraFabric (Earth observation discovery, pricing, orders, C2 tasking and OSINT), with a self-describing ontology and an MCP server" ;
+    schema:isPartOf <https://terrafabric.world/> ;
+    schema:name "tfab" ;
+    schema:softwareVersion "0.1.0" ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/collections-search> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/collections-get> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/items-search> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/providers-list> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/ontology-describe> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/ontology-term> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/graph-match> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/quotes-create> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/mandates-set> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/orders-place> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/orders-get> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/orders-approve> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/c2-coverage> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/c2-task> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/c2-status> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/osint-sources> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/osint-assess> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/osint-watch-create> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/osint-watch-get> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/graph-sparql> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/passes-predict> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/describe> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/tools> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/schema> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/guide> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/exit-codes> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/doctor> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/config> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/call> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/mcp> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/completions> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/collections> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/items> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/passes> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/providers> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/ontology> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/graph> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/quotes> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/mandates> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/orders> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/c2> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/osint> ;
+    tf:hasGlobalOption <https://terrafabric.world/id/cli/tfab/option/base-url> ;
+    tf:hasGlobalOption <https://terrafabric.world/id/cli/tfab/option/format> ;
+    tf:hasGlobalOption <https://terrafabric.world/id/cli/tfab/option/agent-id> ;
+    tf:hasGlobalOption <https://terrafabric.world/id/cli/tfab/option/input> ;
+    tf:hasGlobalOption <https://terrafabric.world/id/cli/tfab/option/dry-run> ;
+    tf:hasGlobalOption <https://terrafabric.world/id/cli/tfab/option/yes> ;
+    tf:hasGlobalOption <https://terrafabric.world/id/cli/tfab/option/timeout> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_TOKEN> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_TOKEN_URL> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_CLIENT_ID> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_CLIENT_SECRET> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_SCOPES> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_MCP_ALLOW_SPEND> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_BASE_URL> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_FORMAT> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_AGENT_ID> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_TIMEOUT> ;
+    tf:supportsFormat tf:output-json ;
+    tf:supportsFormat tf:output-ndjson ;
+    tf:supportsFormat tf:output-text .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage> a tf:RemoteCliCommand ;
+    schema:description "Given an AOI, time window and constraints, rank every source (free archive, commercial archive, tasking) by expected collections, time-to-first-data, resolution and cost, and propose a layered collection plan." ;
+    schema:encodingType "application/json" ;
+    schema:name "Assess coverage for a requirement (C2)" ;
+    tf:commandLine "tfab c2 coverage" ;
+    tf:example "tfab c2 coverage --input requirement.json" ;
+    tf:example "tfab c2 coverage --aoi 4.0,51.9,4.3,52.0 --intent 'port activity'" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/aoi> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/all-weather> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/budget-usd> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/end> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/include-commercial> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/include-free> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/intent> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/license-tier> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/max-gsd-m> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/max-latency-hours> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/modalities> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/night> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/start> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/c2> ;
+    tf:inputSchema "{\"properties\":{\"all_weather\":{\"description\":\"Require collection through cloud.\",\"type\":\"boolean\"},\"aoi\":{\"description\":\"Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.\",\"oneOf\":[{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},{\"type\":\"object\"}]},\"budget_usd\":{\"type\":\"number\"},\"end\":{\"description\":\"Window end (default start + 72h).\",\"format\":\"date-time\",\"type\":\"string\"},\"include_commercial\":{\"default\":true,\"type\":\"boolean\"},\"include_free\":{\"default\":true,\"type\":\"boolean\"},\"intent\":{\"description\":\"Plain-language information need.\",\"type\":\"string\"},\"license_tier\":{\"enum\":[\"single-org\",\"multi-org\",\"government-wide\",\"public-release\"],\"type\":\"string\"},\"max_gsd_m\":{\"description\":\"Maximum acceptable ground sample distance (m).\",\"type\":\"number\"},\"max_latency_hours\":{\"type\":\"number\"},\"modalities\":{\"items\":{\"enum\":[\"optical\",\"multispectral\",\"hyperspectral\",\"thermal\",\"sar\",\"lidar\",\"elevation\",\"atmospheric\",\"landcover\",\"rf\",\"ais\",\"video\",\"3d\",\"vector\"],\"type\":\"string\"},\"type\":\"array\"},\"night\":{\"description\":\"Require night capability.\",\"type\":\"boolean\"},\"start\":{\"description\":\"Window start (default now).\",\"format\":\"date-time\",\"type\":\"string\"}},\"required\":[\"aoi\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/assess_coverage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/auth> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/conflict> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-mission-read ;
+    tf:returnsType tf:CoverageAssessment ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/all-weather> a tf:CliOption ;
+    schema:description "Require collection through cloud." ;
+    schema:multipleValues false ;
+    schema:valueName "ALL_WEATHER" ;
+    schema:valueRequired false ;
+    tf:argumentKey "all_weather" ;
+    tf:optionFlag "all-weather" ;
+    tf:secret false ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/aoi> a tf:CliOption ;
+    schema:description "Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees." ;
+    schema:multipleValues false ;
+    schema:valueName "AOI" ;
+    schema:valueRequired true ;
+    tf:argumentKey "aoi" ;
+    tf:optionFlag "aoi" ;
+    tf:secret false ;
+    tf:valueType rdf:JSON .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/budget-usd> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "BUDGET_USD" ;
+    schema:valueRequired false ;
+    tf:argumentKey "budget_usd" ;
+    tf:optionFlag "budget-usd" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/end> a tf:CliOption ;
+    schema:description "Window end (default start + 72h)." ;
+    schema:multipleValues false ;
+    schema:valueName "END" ;
+    schema:valueRequired false ;
+    tf:argumentKey "end" ;
+    tf:optionFlag "end" ;
+    tf:secret false ;
+    tf:valueType xsd:dateTime .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/include-commercial> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "INCLUDE_COMMERCIAL" ;
+    schema:valueRequired false ;
+    tf:argumentKey "include_commercial" ;
+    tf:optionFlag "include-commercial" ;
+    tf:secret false ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/include-free> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "INCLUDE_FREE" ;
+    schema:valueRequired false ;
+    tf:argumentKey "include_free" ;
+    tf:optionFlag "include-free" ;
+    tf:secret false ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/intent> a tf:CliOption ;
+    schema:description "Plain-language information need." ;
+    schema:multipleValues false ;
+    schema:valueName "INTENT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "intent" ;
+    tf:optionFlag "intent" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/license-tier> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "LICENSE_TIER" ;
+    schema:valueRequired false ;
+    tf:allowedValue "single-org" ;
+    tf:allowedValue "multi-org" ;
+    tf:allowedValue "government-wide" ;
+    tf:allowedValue "public-release" ;
+    tf:argumentKey "license_tier" ;
+    tf:optionFlag "license-tier" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/max-gsd-m> a tf:CliOption ;
+    schema:description "Maximum acceptable ground sample distance (m)." ;
+    schema:multipleValues false ;
+    schema:valueName "MAX_GSD_M" ;
+    schema:valueRequired false ;
+    tf:argumentKey "max_gsd_m" ;
+    tf:optionFlag "max-gsd-m" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/max-latency-hours> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "MAX_LATENCY_HOURS" ;
+    schema:valueRequired false ;
+    tf:argumentKey "max_latency_hours" ;
+    tf:optionFlag "max-latency-hours" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/modalities> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "MODALITIES" ;
+    schema:valueRequired false ;
+    tf:allowedValue "optical" ;
+    tf:allowedValue "multispectral" ;
+    tf:allowedValue "hyperspectral" ;
+    tf:allowedValue "thermal" ;
+    tf:allowedValue "sar" ;
+    tf:allowedValue "lidar" ;
+    tf:allowedValue "elevation" ;
+    tf:allowedValue "atmospheric" ;
+    tf:allowedValue "landcover" ;
+    tf:allowedValue "rf" ;
+    tf:allowedValue "ais" ;
+    tf:allowedValue "video" ;
+    tf:allowedValue "3d" ;
+    tf:allowedValue "vector" ;
+    tf:argumentKey "modalities" ;
+    tf:optionFlag "modalities" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/night> a tf:CliOption ;
+    schema:description "Require night capability." ;
+    schema:multipleValues false ;
+    schema:valueName "NIGHT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "night" ;
+    tf:optionFlag "night" ;
+    tf:secret false ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-coverage/option/start> a tf:CliOption ;
+    schema:description "Window start (default now)." ;
+    schema:multipleValues false ;
+    schema:valueName "START" ;
+    schema:valueRequired false ;
+    tf:argumentKey "start" ;
+    tf:optionFlag "start" ;
+    tf:secret false ;
+    tf:valueType xsd:dateTime .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-status> a tf:RemoteCliCommand ;
+    schema:description "Status and timeline of a tasking request." ;
+    schema:encodingType "application/json" ;
+    schema:name "Get tasking status (C2)" ;
+    tf:commandLine "tfab c2 status" ;
+    tf:example "tfab c2 status --id t_123" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-status/option/id> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/c2> ;
+    tf:inputSchema "{\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[\"id\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/get_tasking> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/auth> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/conflict> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-mission-read ;
+    tf:returnsType tf:TaskingRequest ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-status/option/id> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "ID" ;
+    schema:valueRequired true ;
+    tf:argumentKey "id" ;
+    tf:optionFlag "id" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-task> a tf:RemoteCliCommand ;
+    schema:description "Task a sensor to satisfy a collection requirement. If no collection is given the best taskable option is chosen. Creates a quote and a tracked tasking request." ;
+    schema:encodingType "application/json" ;
+    schema:name "Submit a tasking request (C2)" ;
+    tf:commandLine "tfab c2 task" ;
+    tf:example "tfab c2 task --input tasking.json --yes" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/requirement> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/collection> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/marking> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/priority> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/requester> ;
+    tf:hasSideEffect tf:effect-commits-spend ;
+    tf:idempotent false ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/c2> ;
+    tf:inputSchema "{\"properties\":{\"collection\":{\"type\":\"string\"},\"marking\":{\"type\":\"string\"},\"priority\":{\"enum\":[\"standard\",\"priority\",\"urgent\",\"flash\"],\"type\":\"string\"},\"requester\":{\"type\":\"string\"},\"requirement\":{\"properties\":{\"all_weather\":{\"description\":\"Require collection through cloud.\",\"type\":\"boolean\"},\"aoi\":{\"description\":\"Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.\",\"oneOf\":[{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},{\"type\":\"object\"}]},\"budget_usd\":{\"type\":\"number\"},\"end\":{\"description\":\"Window end (default start + 72h).\",\"format\":\"date-time\",\"type\":\"string\"},\"include_commercial\":{\"default\":true,\"type\":\"boolean\"},\"include_free\":{\"default\":true,\"type\":\"boolean\"},\"intent\":{\"description\":\"Plain-language information need.\",\"type\":\"string\"},\"license_tier\":{\"enum\":[\"single-org\",\"multi-org\",\"government-wide\",\"public-release\"],\"type\":\"string\"},\"max_gsd_m\":{\"description\":\"Maximum acceptable ground sample distance (m).\",\"type\":\"number\"},\"max_latency_hours\":{\"type\":\"number\"},\"modalities\":{\"items\":{\"enum\":[\"optical\",\"multispectral\",\"hyperspectral\",\"thermal\",\"sar\",\"lidar\",\"elevation\",\"atmospheric\",\"landcover\",\"rf\",\"ais\",\"video\",\"3d\",\"vector\"],\"type\":\"string\"},\"type\":\"array\"},\"night\":{\"description\":\"Require night capability.\",\"type\":\"boolean\"},\"start\":{\"description\":\"Window start (default now).\",\"format\":\"date-time\",\"type\":\"string\"}},\"required\":[\"aoi\"],\"type\":\"object\"}},\"required\":[\"requirement\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/submit_tasking> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/auth> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/conflict> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/confirmation-required> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-mission-task ;
+    tf:returnsType tf:TaskingRequest ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-task/option/collection> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "COLLECTION" ;
+    schema:valueRequired false ;
+    tf:argumentKey "collection" ;
+    tf:optionFlag "collection" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-task/option/marking> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "MARKING" ;
+    schema:valueRequired false ;
+    tf:argumentKey "marking" ;
+    tf:optionFlag "marking" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-task/option/priority> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "PRIORITY" ;
+    schema:valueRequired false ;
+    tf:allowedValue "standard" ;
+    tf:allowedValue "priority" ;
+    tf:allowedValue "urgent" ;
+    tf:allowedValue "flash" ;
+    tf:argumentKey "priority" ;
+    tf:optionFlag "priority" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-task/option/requester> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "REQUESTER" ;
+    schema:valueRequired false ;
+    tf:argumentKey "requester" ;
+    tf:optionFlag "requester" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-task/option/requirement> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "REQUIREMENT" ;
+    schema:valueRequired true ;
+    tf:argumentKey "requirement" ;
+    tf:optionFlag "requirement" ;
+    tf:secret false ;
+    tf:valueType rdf:JSON .
+
+<https://terrafabric.world/id/cli/tfab/command/call> a tf:LocalCliCommand ;
+    schema:description "Invoke a server tool directly with JSON arguments (--input or --args). For tools newer than this CLI." ;
+    schema:name "Invoke any server tool by name" ;
+    tf:commandLine "tfab call" ;
+    tf:example "tfab call search_collections --args '{\"q\":\"radar\",\"limit\":3}'" ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent false ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-get> a tf:RemoteCliCommand ;
+    schema:description "Full record for one collection including specs, licence, access endpoints (STAC APIs, S3 buckets, broker), pricing offer and JSON-LD." ;
+    schema:encodingType "application/json" ;
+    schema:name "Get collection detail" ;
+    tf:commandLine "tfab collections get" ;
+    tf:example "tfab collections get --id sentinel-2-l2a" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-get/option/id> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/collections> ;
+    tf:inputSchema "{\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[\"id\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/get_collection> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Collection ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-get/option/id> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "ID" ;
+    schema:valueRequired true ;
+    tf:argumentKey "id" ;
+    tf:optionFlag "id" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search> a tf:RemoteCliCommand ;
+    schema:description "Search the TerraFabric meta-catalog of free and commercial Earth observation collections (raw sensor data, pre-processed ARD and data products). Supports free text with operational synonyms (e.g. 'radar', 'ship', 'methane'), facets and spatial/temporal filters. Returns ranked collections with facet counts." ;
+    schema:encodingType "application/json" ;
+    schema:name "Search EO collections" ;
+    tf:commandLine "tfab collections search" ;
+    tf:example "tfab collections search --q radar --bbox 4.0,51.9,4.3,52.0 --limit 5" ;
+    tf:example "tfab collections search --modality sar --access free --all-weather" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/access> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/all-weather> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/bbox> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/datetime> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/limit> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/max-gsd> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/modality> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/night> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/provider> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/q> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/sort> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/tasking> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/collections-search/option/tier> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/collections> ;
+    tf:inputSchema "{\"properties\":{\"access\":{\"enum\":[\"free\",\"commercial\"],\"type\":\"string\"},\"all_weather\":{\"type\":\"boolean\"},\"bbox\":{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},\"datetime\":{\"description\":\"ISO interval 'start/end'; '..' for open ends.\",\"type\":\"string\"},\"limit\":{\"default\":10,\"maximum\":100,\"minimum\":1,\"type\":\"integer\"},\"max_gsd\":{\"description\":\"Max ground sample distance in metres.\",\"type\":\"number\"},\"modality\":{\"items\":{\"enum\":[\"optical\",\"multispectral\",\"hyperspectral\",\"thermal\",\"sar\",\"lidar\",\"elevation\",\"atmospheric\",\"landcover\",\"rf\",\"ais\",\"video\",\"3d\",\"vector\"],\"type\":\"string\"},\"type\":\"array\"},\"night\":{\"type\":\"boolean\"},\"provider\":{\"items\":{\"type\":\"string\"},\"type\":\"array\"},\"q\":{\"description\":\"Free text query.\",\"type\":\"string\"},\"sort\":{\"enum\":[\"relevance\",\"gsd\",\"revisit\",\"latency\",\"price\",\"start\"],\"type\":\"string\"},\"tasking\":{\"description\":\"Only taskable sources.\",\"type\":\"boolean\"},\"tier\":{\"items\":{\"enum\":[\"raw\",\"preprocessed\",\"product\"],\"type\":\"string\"},\"type\":\"array\"}},\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/search_collections> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Collection ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/access> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "ACCESS" ;
+    schema:valueRequired false ;
+    tf:allowedValue "free" ;
+    tf:allowedValue "commercial" ;
+    tf:argumentKey "access" ;
+    tf:optionFlag "access" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/all-weather> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "ALL_WEATHER" ;
+    schema:valueRequired false ;
+    tf:argumentKey "all_weather" ;
+    tf:optionFlag "all-weather" ;
+    tf:secret false ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/bbox> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "BBOX" ;
+    schema:valueRequired false ;
+    tf:argumentKey "bbox" ;
+    tf:optionFlag "bbox" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/datetime> a tf:CliOption ;
+    schema:description "ISO interval 'start/end'; '..' for open ends." ;
+    schema:multipleValues false ;
+    schema:valueName "DATETIME" ;
+    schema:valueRequired false ;
+    tf:argumentKey "datetime" ;
+    tf:optionFlag "datetime" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/limit> a tf:CliOption ;
+    schema:maxValue "100.0"^^xsd:decimal ;
+    schema:minValue "1.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "LIMIT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "limit" ;
+    tf:optionFlag "limit" ;
+    tf:secret false ;
+    tf:valueType xsd:integer .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/max-gsd> a tf:CliOption ;
+    schema:description "Max ground sample distance in metres." ;
+    schema:multipleValues false ;
+    schema:valueName "MAX_GSD" ;
+    schema:valueRequired false ;
+    tf:argumentKey "max_gsd" ;
+    tf:optionFlag "max-gsd" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/modality> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "MODALITY" ;
+    schema:valueRequired false ;
+    tf:allowedValue "optical" ;
+    tf:allowedValue "multispectral" ;
+    tf:allowedValue "hyperspectral" ;
+    tf:allowedValue "thermal" ;
+    tf:allowedValue "sar" ;
+    tf:allowedValue "lidar" ;
+    tf:allowedValue "elevation" ;
+    tf:allowedValue "atmospheric" ;
+    tf:allowedValue "landcover" ;
+    tf:allowedValue "rf" ;
+    tf:allowedValue "ais" ;
+    tf:allowedValue "video" ;
+    tf:allowedValue "3d" ;
+    tf:allowedValue "vector" ;
+    tf:argumentKey "modality" ;
+    tf:optionFlag "modality" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/night> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "NIGHT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "night" ;
+    tf:optionFlag "night" ;
+    tf:secret false ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/provider> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "PROVIDER" ;
+    schema:valueRequired false ;
+    tf:argumentKey "provider" ;
+    tf:optionFlag "provider" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/q> a tf:CliOption ;
+    schema:description "Free text query." ;
+    schema:multipleValues false ;
+    schema:valueName "Q" ;
+    schema:valueRequired false ;
+    tf:argumentKey "q" ;
+    tf:optionFlag "q" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/sort> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "SORT" ;
+    schema:valueRequired false ;
+    tf:allowedValue "relevance" ;
+    tf:allowedValue "gsd" ;
+    tf:allowedValue "revisit" ;
+    tf:allowedValue "latency" ;
+    tf:allowedValue "price" ;
+    tf:allowedValue "start" ;
+    tf:argumentKey "sort" ;
+    tf:optionFlag "sort" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/tasking> a tf:CliOption ;
+    schema:description "Only taskable sources." ;
+    schema:multipleValues false ;
+    schema:valueName "TASKING" ;
+    schema:valueRequired false ;
+    tf:argumentKey "tasking" ;
+    tf:optionFlag "tasking" ;
+    tf:secret false ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/command/collections-search/option/tier> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "TIER" ;
+    schema:valueRequired false ;
+    tf:allowedValue "raw" ;
+    tf:allowedValue "preprocessed" ;
+    tf:allowedValue "product" ;
+    tf:argumentKey "tier" ;
+    tf:optionFlag "tier" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/completions> a tf:LocalCliCommand ;
+    schema:description "Print a completion script for bash, zsh, fish, powershell or elvish." ;
+    schema:name "Shell completions" ;
+    tf:commandLine "tfab completions" ;
+    tf:example "tfab completions bash > /etc/bash_completion.d/tfab" ;
+    tf:hasSideEffect tf:effect-local ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork false .
+
+<https://terrafabric.world/id/cli/tfab/command/config> a tf:LocalCliCommand ;
+    schema:description "The effective base URL, output format, agent id and which credentials are present. Secret values are never shown." ;
+    schema:name "Show effective configuration" ;
+    tf:commandLine "tfab config" ;
+    tf:example "tfab config" ;
+    tf:hasSideEffect tf:effect-local ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork false .
+
+<https://terrafabric.world/id/cli/tfab/command/describe> a tf:LocalCliCommand ;
+    schema:description "Machine-readable description of the program (no argument) or of one command: input JSON Schema, side effect, credential, exit statuses and examples. Start here." ;
+    schema:name "Describe the CLI or one command" ;
+    tf:commandLine "tfab describe" ;
+    tf:example "tfab describe" ;
+    tf:example "tfab describe collections search" ;
+    tf:hasSideEffect tf:effect-local ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork false .
+
+<https://terrafabric.world/id/cli/tfab/command/doctor> a tf:LocalCliCommand ;
+    schema:description "Reaches the server, checks which credentials are configured (never their values) and compares the server's tool manifest with the one this CLI was built from." ;
+    schema:name "Check connectivity and compatibility" ;
+    tf:commandLine "tfab doctor" ;
+    tf:example "tfab doctor" ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/exit-codes> a tf:LocalCliCommand ;
+    schema:description "Every exit status with its meaning and whether retrying can help." ;
+    schema:name "List exit statuses" ;
+    tf:commandLine "tfab exit-codes" ;
+    tf:example "tfab exit-codes" ;
+    tf:hasSideEffect tf:effect-local ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork false .
+
+<https://terrafabric.world/id/cli/tfab/command/graph-match> a tf:RemoteCliCommand ;
+    schema:description "Linked-data-fragments style triple pattern query over the full knowledge graph (ontology + catalog). Any of s/p/o may be omitted as a wildcard. Use CURIEs (tf:, tfr:, dct:, ...). Literal objects match by value." ;
+    schema:encodingType "application/json" ;
+    schema:name "Triple-pattern query" ;
+    tf:commandLine "tfab graph match" ;
+    tf:example "tfab graph match --p rdf:type --o tf:Satellite --limit 20" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/graph-match/option/limit> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/graph-match/option/o> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/graph-match/option/p> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/graph-match/option/s> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/graph> ;
+    tf:inputSchema "{\"properties\":{\"limit\":{\"default\":100,\"maximum\":1000,\"type\":\"integer\"},\"o\":{\"type\":\"string\"},\"p\":{\"type\":\"string\"},\"s\":{\"type\":\"string\"}},\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/query_graph> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType rdf:Statement ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/graph-match/option/limit> a tf:CliOption ;
+    schema:maxValue "1000.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "LIMIT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "limit" ;
+    tf:optionFlag "limit" ;
+    tf:secret false ;
+    tf:valueType xsd:integer .
+
+<https://terrafabric.world/id/cli/tfab/command/graph-match/option/o> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "O" ;
+    schema:valueRequired false ;
+    tf:argumentKey "o" ;
+    tf:optionFlag "o" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/graph-match/option/p> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "P" ;
+    schema:valueRequired false ;
+    tf:argumentKey "p" ;
+    tf:optionFlag "p" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/graph-match/option/s> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "S" ;
+    schema:valueRequired false ;
+    tf:argumentKey "s" ;
+    tf:optionFlag "s" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/graph-sparql> a tf:RemoteCliCommand ;
+    schema:description "Read-only SPARQL 1.1 over the full TerraFabric graph (ontology + catalog). Use PREFIX tf: <https://terrafabric.world/ont#> and tfr: <https://terrafabric.world/id/>. SELECT/ASK return SPARQL JSON results (capped at 10,000 rows, flagged truncated); CONSTRUCT/DESCRIBE return Turtle. Updates and SERVICE are refused." ;
+    schema:encodingType "application/json" ;
+    schema:name "SPARQL query over the knowledge graph" ;
+    tf:commandLine "tfab graph sparql" ;
+    tf:example "tfab graph sparql --query 'PREFIX tf: <https://terrafabric.world/ont#> SELECT ?c WHERE { ?c a tf:Collection } LIMIT 5'" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/graph-sparql/option/query> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/graph> ;
+    tf:inputSchema "{\"properties\":{\"query\":{\"maxLength\":10240,\"type\":\"string\"}},\"required\":[\"query\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/sparql_query> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType rdf:Statement ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/graph-sparql/option/query> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "QUERY" ;
+    schema:valueRequired true ;
+    tf:argumentKey "query" ;
+    tf:optionFlag "query" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/guide> a tf:LocalCliCommand ;
+    schema:description "A concise Markdown orientation for AI agents: conventions, credentials, safety rules and the command list." ;
+    schema:name "Agent orientation guide" ;
+    tf:commandLine "tfab guide" ;
+    tf:example "tfab guide" ;
+    tf:hasSideEffect tf:effect-local ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork false .
+
+<https://terrafabric.world/id/cli/tfab/command/items-search> a tf:RemoteCliCommand ;
+    schema:description "Find STAC items (scenes/granules) for a collection over a bbox and time interval. Open collections are searched live against their upstream STAC APIs (tf:source.kind = live, each item links to its upstream record); commercial collections, or open ones whose upstream is unavailable, return simulated items flagged tf:synthetic." ;
+    schema:encodingType "application/json" ;
+    schema:name "Search items (scenes)" ;
+    tf:commandLine "tfab items search" ;
+    tf:example "tfab items search --collection sentinel-2-l2a --bbox 4.0,51.9,4.3,52.0 --datetime 2026-09-01/.. --max-cloud 20" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/items-search/option/collection> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/items-search/option/bbox> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/items-search/option/datetime> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/items-search/option/limit> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/items-search/option/max-cloud> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/items> ;
+    tf:inputSchema "{\"properties\":{\"bbox\":{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},\"collection\":{\"type\":\"string\"},\"datetime\":{\"type\":\"string\"},\"limit\":{\"default\":10,\"maximum\":100,\"minimum\":1,\"type\":\"integer\"},\"max_cloud\":{\"maximum\":100,\"minimum\":0,\"type\":\"number\"}},\"required\":[\"collection\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/search_items> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Item ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/items-search/option/bbox> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "BBOX" ;
+    schema:valueRequired false ;
+    tf:argumentKey "bbox" ;
+    tf:optionFlag "bbox" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/items-search/option/collection> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "COLLECTION" ;
+    schema:valueRequired true ;
+    tf:argumentKey "collection" ;
+    tf:optionFlag "collection" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/items-search/option/datetime> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "DATETIME" ;
+    schema:valueRequired false ;
+    tf:argumentKey "datetime" ;
+    tf:optionFlag "datetime" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/items-search/option/limit> a tf:CliOption ;
+    schema:maxValue "100.0"^^xsd:decimal ;
+    schema:minValue "1.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "LIMIT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "limit" ;
+    tf:optionFlag "limit" ;
+    tf:secret false ;
+    tf:valueType xsd:integer .
+
+<https://terrafabric.world/id/cli/tfab/command/items-search/option/max-cloud> a tf:CliOption ;
+    schema:maxValue "100.0"^^xsd:decimal ;
+    schema:minValue "0.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "MAX_CLOUD" ;
+    schema:valueRequired false ;
+    tf:argumentKey "max_cloud" ;
+    tf:optionFlag "max-cloud" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/mandates-set> a tf:RemoteCliCommand ;
+    schema:description "Principal-issued spending policy for an agent: per-order limit, total budget and permitted licence tiers. Orders outside the mandate wait for approval. Issuing returns a principal_token once; changing an existing mandate requires it. An agent cannot issue its own mandate." ;
+    schema:encodingType "application/json" ;
+    schema:name "Set agent spending mandate" ;
+    tf:commandLine "tfab mandates set" ;
+    tf:example "tfab mandates set --agent-id analyst-bot --principal ops-lead --max-order-usd 500 --budget-usd 5000" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/mandates-set/option/agent-id> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/mandates-set/option/budget-usd> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/mandates-set/option/max-order-usd> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/mandates-set/option/principal> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/mandates-set/option/allowed-license-tiers> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/mandates-set/option/principal-token> ;
+    tf:hasSideEffect tf:effect-creates-state ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/mandates> ;
+    tf:inputSchema "{\"properties\":{\"agent_id\":{\"type\":\"string\"},\"allowed_license_tiers\":{\"items\":{\"enum\":[\"single-org\",\"multi-org\",\"government-wide\",\"public-release\"],\"type\":\"string\"},\"type\":\"array\"},\"budget_usd\":{\"minimum\":0,\"type\":\"number\"},\"max_order_usd\":{\"minimum\":0,\"type\":\"number\"},\"principal\":{\"type\":\"string\"},\"principal_token\":{\"description\":\"Required to change an existing mandate.\",\"type\":\"string\"}},\"required\":[\"agent_id\",\"principal\",\"max_order_usd\",\"budget_usd\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/set_mandate> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/auth> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/conflict> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-principal ;
+    tf:returnsType tf:SpendingMandate ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/mandates-set/option/agent-id> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "AGENT_ID" ;
+    schema:valueRequired true ;
+    tf:argumentKey "agent_id" ;
+    tf:optionFlag "agent-id" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/mandates-set/option/allowed-license-tiers> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "ALLOWED_LICENSE_TIERS" ;
+    schema:valueRequired false ;
+    tf:allowedValue "single-org" ;
+    tf:allowedValue "multi-org" ;
+    tf:allowedValue "government-wide" ;
+    tf:allowedValue "public-release" ;
+    tf:argumentKey "allowed_license_tiers" ;
+    tf:optionFlag "allowed-license-tiers" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/mandates-set/option/budget-usd> a tf:CliOption ;
+    schema:minValue "0.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "BUDGET_USD" ;
+    schema:valueRequired true ;
+    tf:argumentKey "budget_usd" ;
+    tf:optionFlag "budget-usd" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/mandates-set/option/max-order-usd> a tf:CliOption ;
+    schema:minValue "0.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "MAX_ORDER_USD" ;
+    schema:valueRequired true ;
+    tf:argumentKey "max_order_usd" ;
+    tf:optionFlag "max-order-usd" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/mandates-set/option/principal> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "PRINCIPAL" ;
+    schema:valueRequired true ;
+    tf:argumentKey "principal" ;
+    tf:optionFlag "principal" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/mandates-set/option/principal-token> a tf:CliOption ;
+    schema:description "Required to change an existing mandate." ;
+    schema:multipleValues false ;
+    schema:valueName "PRINCIPAL_TOKEN" ;
+    schema:valueRequired false ;
+    tf:argumentKey "principal_token" ;
+    tf:optionFlag "principal-token" ;
+    tf:secret true ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/mcp> a tf:LocalCliCommand ;
+    schema:description "Serve every remote command as a Model Context Protocol tool over stdio. Credentials stay in the CLI's environment. Spend tools are offered only when TFAB_MCP_ALLOW_SPEND=true." ;
+    schema:name "Run as an MCP server (stdio)" ;
+    tf:commandLine "tfab mcp" ;
+    tf:example "tfab mcp" ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/ontology-describe> a tf:RemoteCliCommand ;
+    schema:description "Overview of the TerraFabric Ontology: modules, classes, properties and counts. Use this first to learn the vocabulary for query_graph." ;
+    schema:encodingType "application/json" ;
+    schema:name "Describe the TerraFabric ontology" ;
+    tf:commandLine "tfab ontology describe" ;
+    tf:example "tfab ontology describe --module c2" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/ontology-describe/option/module> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/ontology> ;
+    tf:inputSchema "{\"properties\":{\"module\":{\"enum\":[\"actors\",\"observation\",\"data\",\"commerce\",\"agentic\",\"c2\"],\"type\":\"string\"}},\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/describe_ontology> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType owl:Ontology ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/ontology-describe/option/module> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "MODULE" ;
+    schema:valueRequired false ;
+    tf:allowedValue "actors" ;
+    tf:allowedValue "observation" ;
+    tf:allowedValue "data" ;
+    tf:allowedValue "commerce" ;
+    tf:allowedValue "agentic" ;
+    tf:allowedValue "c2" ;
+    tf:argumentKey "module" ;
+    tf:optionFlag "module" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/ontology-term> a tf:RemoteCliCommand ;
+    schema:description "All triples about a class, property, vocabulary term or catalog entity, e.g. 'tf:Collection', 'tf:gsdMeters', 'tf:modality-sar', 'tfr:collection/sentinel-2-l2a'." ;
+    schema:encodingType "application/json" ;
+    schema:name "Describe an ontology term or entity" ;
+    tf:commandLine "tfab ontology term" ;
+    tf:example "tfab ontology term --term tf:Collection" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/ontology-term/option/term> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/ontology> ;
+    tf:inputSchema "{\"properties\":{\"term\":{\"type\":\"string\"}},\"required\":[\"term\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/describe_term> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType rdfs:Resource ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/ontology-term/option/term> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "TERM" ;
+    schema:valueRequired true ;
+    tf:argumentKey "term" ;
+    tf:optionFlag "term" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-approve> a tf:RemoteCliCommand ;
+    schema:description "Approve an order that exceeded an agent's mandate. Requires the principal token issued with that agent's mandate (or the operator key). Must only be invoked on explicit instruction from the human principal; an agent never holds its own principal's token." ;
+    schema:encodingType "application/json" ;
+    schema:name "Approve an order (principal)" ;
+    tf:commandLine "tfab orders approve" ;
+    tf:example "tfab orders approve --id o_123 --approver ops-lead --principal-token env:TFAB_PRINCIPAL_TOKEN --yes" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/orders-approve/option/approver> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/orders-approve/option/id> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/orders-approve/option/principal-token> ;
+    tf:hasSideEffect tf:effect-commits-spend ;
+    tf:idempotent false ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/orders> ;
+    tf:inputSchema "{\"properties\":{\"approver\":{\"type\":\"string\"},\"id\":{\"type\":\"string\"},\"principal_token\":{\"type\":\"string\"}},\"required\":[\"id\",\"approver\",\"principal_token\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/approve_order> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/auth> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/conflict> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/confirmation-required> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-principal ;
+    tf:returnsType tf:Order ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-approve/option/approver> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "APPROVER" ;
+    schema:valueRequired true ;
+    tf:argumentKey "approver" ;
+    tf:optionFlag "approver" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-approve/option/id> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "ID" ;
+    schema:valueRequired true ;
+    tf:argumentKey "id" ;
+    tf:optionFlag "id" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-approve/option/principal-token> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "PRINCIPAL_TOKEN" ;
+    schema:valueRequired true ;
+    tf:argumentKey "principal_token" ;
+    tf:optionFlag "principal-token" ;
+    tf:secret true ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-get> a tf:RemoteCliCommand ;
+    schema:description "Order status, history, delivery links and next actions." ;
+    schema:encodingType "application/json" ;
+    schema:name "Get order status" ;
+    tf:commandLine "tfab orders get" ;
+    tf:example "tfab orders get --id o_123" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/orders-get/option/id> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/orders> ;
+    tf:inputSchema "{\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[\"id\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/get_order> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Order ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-get/option/id> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "ID" ;
+    schema:valueRequired true ;
+    tf:argumentKey "id" ;
+    tf:optionFlag "id" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-place> a tf:RemoteCliCommand ;
+    schema:description "Order from a quote on behalf of the calling agent. Within mandate → confirmed; otherwise 'awaiting_approval' with an approve action for the principal. Commits spend." ;
+    schema:encodingType "application/json" ;
+    schema:name "Place an order" ;
+    tf:commandLine "tfab orders place" ;
+    tf:example "tfab --agent-id analyst-bot orders place --quote-id q_123 --yes" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/orders-place/option/quote-id> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/orders-place/option/agent-id> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/orders-place/option/reference> ;
+    tf:hasSideEffect tf:effect-commits-spend ;
+    tf:idempotent false ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/orders> ;
+    tf:inputSchema "{\"properties\":{\"agent_id\":{\"description\":\"Calling agent id (or send x-agent-id header).\",\"type\":\"string\"},\"quote_id\":{\"type\":\"string\"},\"reference\":{\"type\":\"string\"}},\"required\":[\"quote_id\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/place_order> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/auth> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/conflict> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/confirmation-required> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-agent-identity ;
+    tf:returnsType tf:Order ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-place/option/agent-id> a tf:CliOption ;
+    schema:description "Calling agent id (or send x-agent-id header)." ;
+    schema:multipleValues false ;
+    schema:valueName "AGENT_ID" ;
+    schema:valueRequired false ;
+    tf:argumentKey "agent_id" ;
+    tf:optionFlag "agent-id" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-place/option/quote-id> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "QUOTE_ID" ;
+    schema:valueRequired true ;
+    tf:argumentKey "quote_id" ;
+    tf:optionFlag "quote-id" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/orders-place/option/reference> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "REFERENCE" ;
+    schema:valueRequired false ;
+    tf:argumentKey "reference" ;
+    tf:optionFlag "reference" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-assess> a tf:RemoteCliCommand ;
+    schema:description "Rank open-licence sources for an AOI and time window (past windows use open archives), with licence, attribution, access endpoints and sample scenes. Never returns commercial data or costs." ;
+    schema:encodingType "application/json" ;
+    schema:name "Assess open-data coverage (OSINT)" ;
+    tf:commandLine "tfab osint assess" ;
+    tf:example "tfab osint assess --aoi 4.0,51.9,4.3,52.0 --start 2026-09-01T00:00:00Z" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-assess/option/aoi> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-assess/option/all-weather> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-assess/option/end> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-assess/option/intent> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-assess/option/max-gsd-m> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-assess/option/modalities> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-assess/option/night> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-assess/option/start> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/osint> ;
+    tf:inputSchema "{\"properties\":{\"all_weather\":{\"type\":\"boolean\"},\"aoi\":{\"description\":\"Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.\",\"oneOf\":[{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},{\"type\":\"object\"}]},\"end\":{\"format\":\"date-time\",\"type\":\"string\"},\"intent\":{\"type\":\"string\"},\"max_gsd_m\":{\"type\":\"number\"},\"modalities\":{\"items\":{\"enum\":[\"optical\",\"multispectral\",\"hyperspectral\",\"thermal\",\"sar\",\"lidar\",\"elevation\",\"atmospheric\",\"landcover\",\"rf\",\"ais\",\"video\",\"3d\",\"vector\"],\"type\":\"string\"},\"type\":\"array\"},\"night\":{\"type\":\"boolean\"},\"start\":{\"format\":\"date-time\",\"type\":\"string\"}},\"required\":[\"aoi\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/osint_assess> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:CoverageAssessment ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-assess/option/all-weather> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "ALL_WEATHER" ;
+    schema:valueRequired false ;
+    tf:argumentKey "all_weather" ;
+    tf:optionFlag "all-weather" ;
+    tf:secret false ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-assess/option/aoi> a tf:CliOption ;
+    schema:description "Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees." ;
+    schema:multipleValues false ;
+    schema:valueName "AOI" ;
+    schema:valueRequired true ;
+    tf:argumentKey "aoi" ;
+    tf:optionFlag "aoi" ;
+    tf:secret false ;
+    tf:valueType rdf:JSON .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-assess/option/end> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "END" ;
+    schema:valueRequired false ;
+    tf:argumentKey "end" ;
+    tf:optionFlag "end" ;
+    tf:secret false ;
+    tf:valueType xsd:dateTime .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-assess/option/intent> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "INTENT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "intent" ;
+    tf:optionFlag "intent" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-assess/option/max-gsd-m> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "MAX_GSD_M" ;
+    schema:valueRequired false ;
+    tf:argumentKey "max_gsd_m" ;
+    tf:optionFlag "max-gsd-m" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-assess/option/modalities> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "MODALITIES" ;
+    schema:valueRequired false ;
+    tf:allowedValue "optical" ;
+    tf:allowedValue "multispectral" ;
+    tf:allowedValue "hyperspectral" ;
+    tf:allowedValue "thermal" ;
+    tf:allowedValue "sar" ;
+    tf:allowedValue "lidar" ;
+    tf:allowedValue "elevation" ;
+    tf:allowedValue "atmospheric" ;
+    tf:allowedValue "landcover" ;
+    tf:allowedValue "rf" ;
+    tf:allowedValue "ais" ;
+    tf:allowedValue "video" ;
+    tf:allowedValue "3d" ;
+    tf:allowedValue "vector" ;
+    tf:argumentKey "modalities" ;
+    tf:optionFlag "modalities" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-assess/option/night> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "NIGHT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "night" ;
+    tf:optionFlag "night" ;
+    tf:secret false ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-assess/option/start> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "START" ;
+    schema:valueRequired false ;
+    tf:argumentKey "start" ;
+    tf:optionFlag "start" ;
+    tf:secret false ;
+    tf:valueType xsd:dateTime .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-sources> a tf:RemoteCliCommand ;
+    schema:description "Every open-licence, non-restricted source in the fabric with its licence, required attribution and direct access endpoints (STAC APIs, S3 buckets). No commercial data." ;
+    schema:encodingType "application/json" ;
+    schema:name "List open (OSINT) sources" ;
+    tf:commandLine "tfab osint sources" ;
+    tf:example "tfab osint sources" ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/osint> ;
+    tf:inputSchema "{\"properties\":{},\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/osint_sources> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Collection ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-watch-create> a tf:RemoteCliCommand ;
+    schema:description "Create a private watch that records new open-data acquisitions over an AOI. The returned id is the only way to read it; keep it." ;
+    schema:encodingType "application/json" ;
+    schema:name "Watch an AOI for new open data (OSINT)" ;
+    tf:commandLine "tfab osint watch-create" ;
+    tf:example "tfab osint watch-create --aoi 4.0,51.9,4.3,52.0 --name rotterdam" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-watch-create/option/aoi> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-watch-create/option/max-gsd-m> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-watch-create/option/modalities> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-watch-create/option/name> ;
+    tf:hasSideEffect tf:effect-creates-state ;
+    tf:idempotent false ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/osint> ;
+    tf:inputSchema "{\"properties\":{\"aoi\":{\"description\":\"Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.\",\"oneOf\":[{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},{\"type\":\"object\"}]},\"max_gsd_m\":{\"type\":\"number\"},\"modalities\":{\"items\":{\"enum\":[\"optical\",\"multispectral\",\"hyperspectral\",\"thermal\",\"sar\",\"lidar\",\"elevation\",\"atmospheric\",\"landcover\",\"rf\",\"ais\",\"video\",\"3d\",\"vector\"],\"type\":\"string\"},\"type\":\"array\"},\"name\":{\"type\":\"string\"}},\"required\":[\"aoi\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/create_watch> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/auth> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/conflict> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:AreaOfInterest ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-watch-create/option/aoi> a tf:CliOption ;
+    schema:description "Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees." ;
+    schema:multipleValues false ;
+    schema:valueName "AOI" ;
+    schema:valueRequired true ;
+    tf:argumentKey "aoi" ;
+    tf:optionFlag "aoi" ;
+    tf:secret false ;
+    tf:valueType rdf:JSON .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-watch-create/option/max-gsd-m> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "MAX_GSD_M" ;
+    schema:valueRequired false ;
+    tf:argumentKey "max_gsd_m" ;
+    tf:optionFlag "max-gsd-m" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-watch-create/option/modalities> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "MODALITIES" ;
+    schema:valueRequired false ;
+    tf:allowedValue "optical" ;
+    tf:allowedValue "multispectral" ;
+    tf:allowedValue "hyperspectral" ;
+    tf:allowedValue "thermal" ;
+    tf:allowedValue "sar" ;
+    tf:allowedValue "lidar" ;
+    tf:allowedValue "elevation" ;
+    tf:allowedValue "atmospheric" ;
+    tf:allowedValue "landcover" ;
+    tf:allowedValue "rf" ;
+    tf:allowedValue "ais" ;
+    tf:allowedValue "video" ;
+    tf:allowedValue "3d" ;
+    tf:allowedValue "vector" ;
+    tf:argumentKey "modalities" ;
+    tf:optionFlag "modalities" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-watch-create/option/name> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "NAME" ;
+    schema:valueRequired false ;
+    tf:argumentKey "name" ;
+    tf:optionFlag "name" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-watch-get> a tf:RemoteCliCommand ;
+    schema:description "A watch with its most recent open-data matches (newest first)." ;
+    schema:encodingType "application/json" ;
+    schema:name "Get watch matches (OSINT)" ;
+    tf:commandLine "tfab osint watch-get" ;
+    tf:example "tfab osint watch-get --id w_123" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/osint-watch-get/option/id> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/osint> ;
+    tf:inputSchema "{\"properties\":{\"id\":{\"type\":\"string\"}},\"required\":[\"id\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/get_watch> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:AreaOfInterest ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/osint-watch-get/option/id> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "ID" ;
+    schema:valueRequired true ;
+    tf:argumentKey "id" ;
+    tf:optionFlag "id" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/passes-predict> a tf:RemoteCliCommand ;
+    schema:description "When will this collection's satellites next pass over an area? SGP4 propagation of public orbital elements for the open constellations (Sentinel-1/2/3/5P, Landsat, MODIS, VIIRS, ICESat-2, ISS instruments, NISAR). Optical collections mark night passes unusable. Geometry only: not every pass is imaged and cloud is not modelled. Window defaults to the next 7 days, max 14." ;
+    schema:encodingType "application/json" ;
+    schema:name "Predict satellite passes over an AOI" ;
+    tf:commandLine "tfab passes predict" ;
+    tf:example "tfab passes predict --collection sentinel-1-grd --bbox 4.0,51.9,4.3,52.0" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/passes-predict/option/bbox> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/passes-predict/option/collection> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/passes-predict/option/end> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/passes-predict/option/start> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/passes> ;
+    tf:inputSchema "{\"properties\":{\"bbox\":{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},\"collection\":{\"type\":\"string\"},\"end\":{\"format\":\"date-time\",\"type\":\"string\"},\"start\":{\"format\":\"date-time\",\"type\":\"string\"}},\"required\":[\"collection\",\"bbox\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/predict_passes> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Satellite ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/passes-predict/option/bbox> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "BBOX" ;
+    schema:valueRequired true ;
+    tf:argumentKey "bbox" ;
+    tf:optionFlag "bbox" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/passes-predict/option/collection> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "COLLECTION" ;
+    schema:valueRequired true ;
+    tf:argumentKey "collection" ;
+    tf:optionFlag "collection" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/passes-predict/option/end> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "END" ;
+    schema:valueRequired false ;
+    tf:argumentKey "end" ;
+    tf:optionFlag "end" ;
+    tf:secret false ;
+    tf:valueType xsd:dateTime .
+
+<https://terrafabric.world/id/cli/tfab/command/passes-predict/option/start> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "START" ;
+    schema:valueRequired false ;
+    tf:argumentKey "start" ;
+    tf:optionFlag "start" ;
+    tf:secret false ;
+    tf:valueType xsd:dateTime .
+
+<https://terrafabric.world/id/cli/tfab/command/providers-list> a tf:RemoteCliCommand ;
+    schema:description "All data providers (space agencies, commercial operators, academic producers) with their collection counts." ;
+    schema:encodingType "application/json" ;
+    schema:name "List providers" ;
+    tf:commandLine "tfab providers list" ;
+    tf:example "tfab providers list" ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/providers> ;
+    tf:inputSchema "{\"properties\":{},\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/list_providers> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Provider ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/quotes-create> a tf:RemoteCliCommand ;
+    schema:description "Price a data acquisition. Open data returns a $0 quote. Commercial data is priced by area × rate with minimum area, licence tier uplift and (for tasking) priority uplift. Quotes are valid for 24h." ;
+    schema:encodingType "application/json" ;
+    schema:name "Get a price quote" ;
+    tf:commandLine "tfab quotes create" ;
+    tf:example "tfab quotes create --collection maxar-worldview-legion --aoi 4.0,51.9,4.3,52.0 --mode archive" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/quotes-create/option/aoi> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/quotes-create/option/collection> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/quotes-create/option/datetime> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/quotes-create/option/license-tier> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/quotes-create/option/mode> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/quotes-create/option/months> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/quotes-create/option/priority> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/quotes> ;
+    tf:inputSchema "{\"properties\":{\"aoi\":{\"description\":\"Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.\",\"oneOf\":[{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},{\"type\":\"object\"}]},\"collection\":{\"type\":\"string\"},\"datetime\":{\"type\":\"string\"},\"license_tier\":{\"enum\":[\"single-org\",\"multi-org\",\"government-wide\",\"public-release\"],\"type\":\"string\"},\"mode\":{\"enum\":[\"archive\",\"tasking\",\"subscription\"],\"type\":\"string\"},\"months\":{\"maximum\":36,\"minimum\":1,\"type\":\"integer\"},\"priority\":{\"enum\":[\"standard\",\"priority\",\"urgent\",\"flash\"],\"type\":\"string\"}},\"required\":[\"collection\",\"aoi\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/get_quote> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Quote ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/quotes-create/option/aoi> a tf:CliOption ;
+    schema:description "Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees." ;
+    schema:multipleValues false ;
+    schema:valueName "AOI" ;
+    schema:valueRequired true ;
+    tf:argumentKey "aoi" ;
+    tf:optionFlag "aoi" ;
+    tf:secret false ;
+    tf:valueType rdf:JSON .
+
+<https://terrafabric.world/id/cli/tfab/command/quotes-create/option/collection> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "COLLECTION" ;
+    schema:valueRequired true ;
+    tf:argumentKey "collection" ;
+    tf:optionFlag "collection" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/quotes-create/option/datetime> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "DATETIME" ;
+    schema:valueRequired false ;
+    tf:argumentKey "datetime" ;
+    tf:optionFlag "datetime" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/quotes-create/option/license-tier> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "LICENSE_TIER" ;
+    schema:valueRequired false ;
+    tf:allowedValue "single-org" ;
+    tf:allowedValue "multi-org" ;
+    tf:allowedValue "government-wide" ;
+    tf:allowedValue "public-release" ;
+    tf:argumentKey "license_tier" ;
+    tf:optionFlag "license-tier" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/quotes-create/option/mode> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "MODE" ;
+    schema:valueRequired false ;
+    tf:allowedValue "archive" ;
+    tf:allowedValue "tasking" ;
+    tf:allowedValue "subscription" ;
+    tf:argumentKey "mode" ;
+    tf:optionFlag "mode" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/quotes-create/option/months> a tf:CliOption ;
+    schema:maxValue "36.0"^^xsd:decimal ;
+    schema:minValue "1.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "MONTHS" ;
+    schema:valueRequired false ;
+    tf:argumentKey "months" ;
+    tf:optionFlag "months" ;
+    tf:secret false ;
+    tf:valueType xsd:integer .
+
+<https://terrafabric.world/id/cli/tfab/command/quotes-create/option/priority> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "PRIORITY" ;
+    schema:valueRequired false ;
+    tf:allowedValue "standard" ;
+    tf:allowedValue "priority" ;
+    tf:allowedValue "urgent" ;
+    tf:allowedValue "flash" ;
+    tf:argumentKey "priority" ;
+    tf:optionFlag "priority" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/schema> a tf:LocalCliCommand ;
+    schema:description "The CLI's own ontology (OWL classes and properties, plus every command, option, environment variable and exit status as linked data) in Turtle or JSON-LD, linked to the TerraFabric ontology." ;
+    schema:name "Emit the CLI ontology" ;
+    tf:commandLine "tfab schema" ;
+    tf:example "tfab schema --format turtle" ;
+    tf:example "tfab schema --format jsonld" ;
+    tf:hasSideEffect tf:effect-local ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork false .
+
+<https://terrafabric.world/id/cli/tfab/command/tools> a tf:LocalCliCommand ;
+    schema:description "Every command in Model Context Protocol tool shape (name, inputSchema, annotations), for agents that plan in tool terms." ;
+    schema:name "List commands as MCP tools" ;
+    tf:commandLine "tfab tools" ;
+    tf:example "tfab tools" ;
+    tf:hasSideEffect tf:effect-local ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_AGENT_ID> a tf:EnvironmentVariable ;
+    rdfs:comment "Default for --agent-id." ;
+    tf:envName "TFAB_AGENT_ID" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_BASE_URL> a tf:EnvironmentVariable ;
+    rdfs:comment "Default for --base-url." ;
+    tf:envName "TFAB_BASE_URL" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_FORMAT> a tf:EnvironmentVariable ;
+    rdfs:comment "Default for --format." ;
+    tf:envName "TFAB_FORMAT" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_MCP_ALLOW_SPEND> a tf:EnvironmentVariable ;
+    rdfs:comment "Set to true to expose spend commands through `tfab mcp`." ;
+    tf:envName "TFAB_MCP_ALLOW_SPEND" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_CLIENT_ID> a tf:EnvironmentVariable ;
+    rdfs:comment "OAuth client id." ;
+    tf:envName "TFAB_OAUTH_CLIENT_ID" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_CLIENT_SECRET> a tf:EnvironmentVariable ;
+    rdfs:comment "OAuth client secret." ;
+    tf:envName "TFAB_OAUTH_CLIENT_SECRET" ;
+    tf:secret true .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_SCOPES> a tf:EnvironmentVariable ;
+    rdfs:comment "Space-separated OAuth scopes to request." ;
+    tf:envName "TFAB_OAUTH_SCOPES" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_TOKEN_URL> a tf:EnvironmentVariable ;
+    rdfs:comment "OAuth 2.0 token endpoint for client-credentials authentication to the mission API." ;
+    tf:envName "TFAB_OAUTH_TOKEN_URL" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_TIMEOUT> a tf:EnvironmentVariable ;
+    rdfs:comment "Default for --timeout." ;
+    tf:envName "TFAB_TIMEOUT" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_TOKEN> a tf:EnvironmentVariable ;
+    rdfs:comment "Bearer credential for the mission API (a shared key or an access token)." ;
+    tf:envName "TFAB_TOKEN" ;
+    tf:secret true .
+
+<https://terrafabric.world/id/cli/tfab/exit/auth> a tf:ExitStatus ;
+    rdfs:comment "A credential is missing, invalid, or lacks the required scope." ;
+    rdfs:label "auth" ;
+    tf:exitCode 4 ;
+    tf:retryable false .
+
+<https://terrafabric.world/id/cli/tfab/exit/confirmation-required> a tf:ExitStatus ;
+    rdfs:comment "The command commits spend or tasks a sensor and --yes was not given." ;
+    rdfs:label "confirmation-required" ;
+    tf:exitCode 8 ;
+    tf:retryable false .
+
+<https://terrafabric.world/id/cli/tfab/exit/conflict> a tf:ExitStatus ;
+    rdfs:comment "The request conflicts with current state (for example a mandate owned by another principal)." ;
+    rdfs:label "conflict" ;
+    tf:exitCode 5 ;
+    tf:retryable false .
+
+<https://terrafabric.world/id/cli/tfab/exit/internal> a tf:ExitStatus ;
+    rdfs:comment "Unexpected failure inside the CLI." ;
+    rdfs:label "internal" ;
+    tf:exitCode 1 ;
+    tf:retryable false .
+
+<https://terrafabric.world/id/cli/tfab/exit/invalid-input> a tf:ExitStatus ;
+    rdfs:comment "Arguments failed validation against the command's input schema." ;
+    rdfs:label "invalid-input" ;
+    tf:exitCode 9 ;
+    tf:retryable false .
+
+<https://terrafabric.world/id/cli/tfab/exit/not-found> a tf:ExitStatus ;
+    rdfs:comment "The requested collection, order, tasking or term does not exist." ;
+    rdfs:label "not-found" ;
+    tf:exitCode 3 ;
+    tf:retryable false .
+
+<https://terrafabric.world/id/cli/tfab/exit/ok> a tf:ExitStatus ;
+    rdfs:comment "Success; the result is on stdout." ;
+    rdfs:label "ok" ;
+    tf:exitCode 0 ;
+    tf:retryable false .
+
+<https://terrafabric.world/id/cli/tfab/exit/rate-limited> a tf:ExitStatus ;
+    rdfs:comment "Too many requests; wait for retry_after_s and retry." ;
+    rdfs:label "rate-limited" ;
+    tf:exitCode 6 ;
+    tf:retryable true .
+
+<https://terrafabric.world/id/cli/tfab/exit/unavailable> a tf:ExitStatus ;
+    rdfs:comment "Network failure, timeout, or a server/upstream error." ;
+    rdfs:label "unavailable" ;
+    tf:exitCode 7 ;
+    tf:retryable true .
+
+<https://terrafabric.world/id/cli/tfab/exit/usage> a tf:ExitStatus ;
+    rdfs:comment "Unknown command or malformed flags." ;
+    rdfs:label "usage" ;
+    tf:exitCode 2 ;
+    tf:retryable false .
+
+<https://terrafabric.world/id/cli/tfab/group/c2> a tf:CliCommandGroup ;
+    skos:definition "Mission API: coverage and tasking (credential required)" ;
+    skos:prefLabel "c2" .
+
+<https://terrafabric.world/id/cli/tfab/group/collections> a tf:CliCommandGroup ;
+    skos:definition "Discover Earth observation collections" ;
+    skos:prefLabel "collections" .
+
+<https://terrafabric.world/id/cli/tfab/group/graph> a tf:CliCommandGroup ;
+    skos:definition "Query the knowledge graph (triple patterns, SPARQL)" ;
+    skos:prefLabel "graph" .
+
+<https://terrafabric.world/id/cli/tfab/group/items> a tf:CliCommandGroup ;
+    skos:definition "Find scenes (STAC items) within a collection" ;
+    skos:prefLabel "items" .
+
+<https://terrafabric.world/id/cli/tfab/group/mandates> a tf:CliCommandGroup ;
+    skos:definition "Agent spending mandates (principal only)" ;
+    skos:prefLabel "mandates" .
+
+<https://terrafabric.world/id/cli/tfab/group/ontology> a tf:CliCommandGroup ;
+    skos:definition "The TerraFabric ontology on the server" ;
+    skos:prefLabel "ontology" .
+
+<https://terrafabric.world/id/cli/tfab/group/orders> a tf:CliCommandGroup ;
+    skos:definition "Place, track and approve orders" ;
+    skos:prefLabel "orders" .
+
+<https://terrafabric.world/id/cli/tfab/group/osint> a tf:CliCommandGroup ;
+    skos:definition "Open-licence sources, assessment and watches" ;
+    skos:prefLabel "osint" .
+
+<https://terrafabric.world/id/cli/tfab/group/passes> a tf:CliCommandGroup ;
+    skos:definition "Predict satellite passes over an area" ;
+    skos:prefLabel "passes" .
+
+<https://terrafabric.world/id/cli/tfab/group/providers> a tf:CliCommandGroup ;
+    skos:definition "Data providers" ;
+    skos:prefLabel "providers" .
+
+<https://terrafabric.world/id/cli/tfab/group/quotes> a tf:CliCommandGroup ;
+    skos:definition "Price an acquisition" ;
+    skos:prefLabel "quotes" .
+
+<https://terrafabric.world/id/cli/tfab/option/agent-id> a tf:GlobalOption ;
+    schema:description "Agent identity sent as x-agent-id; orders are bounded by this agent's mandate." ;
+    schema:valueName "ID" ;
+    schema:valueRequired false ;
+    tf:optionFlag "agent-id" ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_AGENT_ID> ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/option/base-url> a tf:GlobalOption ;
+    schema:description "TerraFabric API base URL (default https://terrafabric.world/api)." ;
+    schema:valueName "URL" ;
+    schema:valueRequired false ;
+    tf:optionFlag "base-url" ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_BASE_URL> ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/option/dry-run> a tf:GlobalOption ;
+    schema:description "Validate and print the request that would be sent, without sending it." ;
+    schema:valueName "" ;
+    schema:valueRequired false ;
+    tf:optionFlag "dry-run" ;
+    tf:valueType xsd:boolean .
+
+<https://terrafabric.world/id/cli/tfab/option/format> a tf:GlobalOption ;
+    schema:description "Output format: json, ndjson or text (default: json unless stdout is a terminal)." ;
+    schema:valueName "FORMAT" ;
+    schema:valueRequired false ;
+    tf:optionFlag "format" ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_FORMAT> ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/option/input> a tf:GlobalOption ;
+    schema:description "Read arguments as a JSON object from FILE, or '-' for stdin. Flags override its fields." ;
+    schema:valueName "FILE" ;
+    schema:valueRequired false ;
+    tf:optionFlag "input" ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/option/timeout> a tf:GlobalOption ;
+    schema:description "Request timeout in seconds (default 60)." ;
+    schema:valueName "SECONDS" ;
+    schema:valueRequired false ;
+    tf:optionFlag "timeout" ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_TIMEOUT> ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/option/yes> a tf:GlobalOption ;
+    schema:description "Confirm a command that commits spend or tasks a sensor." ;
+    schema:valueName "" ;
+    schema:valueRequired false ;
+    tf:optionFlag "yes" ;
+    tf:valueType xsd:boolean .
+

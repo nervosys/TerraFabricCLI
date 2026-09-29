@@ -1,0 +1,114 @@
+@prefix tf: <https://terrafabric.world/ont#> .
+@prefix tfr: <https://terrafabric.world/id/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <https://schema.org/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+tf:CliCommandShape a sh:NodeShape ;
+    sh:property tf:CliCommandShape-p0 ;
+    sh:property tf:CliCommandShape-p1 ;
+    sh:property tf:CliCommandShape-p2 ;
+    sh:property tf:CliCommandShape-p3 ;
+    sh:property tf:CliCommandShape-p4 ;
+    sh:property tf:CliCommandShape-p5 ;
+    sh:property tf:CliCommandShape-p6 ;
+    sh:targetClass tf:CliCommand .
+
+tf:CliCommandShape-p0 sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path tf:commandLine .
+
+tf:CliCommandShape-p1 sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path schema:name .
+
+tf:CliCommandShape-p2 sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path schema:description .
+
+tf:CliCommandShape-p3 sh:class tf:SideEffect ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:path tf:hasSideEffect .
+
+tf:CliCommandShape-p4 sh:class tf:CredentialRequirement ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:path tf:requiresCredential .
+
+tf:CliCommandShape-p5 sh:class tf:ExitStatus ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:path tf:mayExitWith .
+
+tf:CliCommandShape-p6 sh:datatype xsd:string ;
+    sh:minCount 1 ;
+    sh:path tf:example .
+
+tf:CliOptionShape a sh:NodeShape ;
+    sh:property tf:CliOptionShape-p0 ;
+    sh:property tf:CliOptionShape-p1 ;
+    sh:property tf:CliOptionShape-p2 ;
+    sh:targetClass tf:CliOption .
+
+tf:CliOptionShape-p0 sh:datatype xsd:string ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path tf:optionFlag .
+
+tf:CliOptionShape-p1 sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:path tf:valueType .
+
+tf:CliOptionShape-p2 sh:datatype xsd:boolean ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path schema:valueRequired .
+
+tf:ExitStatusShape a sh:NodeShape ;
+    sh:property tf:ExitStatusShape-p0 ;
+    sh:property tf:ExitStatusShape-p1 ;
+    sh:targetClass tf:ExitStatus .
+
+tf:ExitStatusShape-p0 sh:datatype xsd:integer ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path tf:exitCode .
+
+tf:ExitStatusShape-p1 sh:datatype xsd:boolean ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path tf:retryable .
+
+tf:RemoteCliCommandShape a sh:NodeShape ;
+    sh:property tf:RemoteCliCommandShape-p0 ;
+    sh:property tf:RemoteCliCommandShape-p1 ;
+    sh:property tf:RemoteCliCommandShape-p2 ;
+    sh:targetClass tf:RemoteCliCommand .
+
+tf:RemoteCliCommandShape-p0 sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:path tf:invokesTool .
+
+tf:RemoteCliCommandShape-p1 sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:nodeKind sh:IRI ;
+    sh:path tf:returnsType .
+
+tf:RemoteCliCommandShape-p2 sh:datatype rdf:JSON ;
+    sh:maxCount 1 ;
+    sh:minCount 1 ;
+    sh:path tf:inputSchema .
+

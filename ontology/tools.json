@@ -1,0 +1,942 @@
+[
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Search the TerraFabric meta-catalog of free and commercial Earth observation collections (raw sensor data, pre-processed ARD and data products). Supports free text with operational synonyms (e.g. 'radar', 'ship', 'methane'), facets and spatial/temporal filters. Returns ranked collections with facet counts.",
+    "inputSchema": {
+      "properties": {
+        "access": {
+          "enum": [
+            "free",
+            "commercial"
+          ],
+          "type": "string"
+        },
+        "all_weather": {
+          "type": "boolean"
+        },
+        "bbox": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "datetime": {
+          "description": "ISO interval 'start/end'; '..' for open ends.",
+          "type": "string"
+        },
+        "limit": {
+          "default": 10,
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_gsd": {
+          "description": "Max ground sample distance in metres.",
+          "type": "number"
+        },
+        "modality": {
+          "items": {
+            "enum": [
+              "optical",
+              "multispectral",
+              "hyperspectral",
+              "thermal",
+              "sar",
+              "lidar",
+              "elevation",
+              "atmospheric",
+              "landcover",
+              "rf",
+              "ais",
+              "video",
+              "3d",
+              "vector"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "night": {
+          "type": "boolean"
+        },
+        "provider": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "q": {
+          "description": "Free text query.",
+          "type": "string"
+        },
+        "sort": {
+          "enum": [
+            "relevance",
+            "gsd",
+            "revisit",
+            "latency",
+            "price",
+            "start"
+          ],
+          "type": "string"
+        },
+        "tasking": {
+          "description": "Only taskable sources.",
+          "type": "boolean"
+        },
+        "tier": {
+          "items": {
+            "enum": [
+              "raw",
+              "preprocessed",
+              "product"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "name": "search_collections",
+    "title": "Search EO collections"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Full record for one collection including specs, licence, access endpoints (STAC APIs, S3 buckets, broker), pricing offer and JSON-LD.",
+    "inputSchema": {
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "name": "get_collection",
+    "title": "Get collection detail"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Find STAC items (scenes/granules) for a collection over a bbox and time interval. Open collections are searched live against their upstream STAC APIs (tf:source.kind = live, each item links to its upstream record); commercial collections, or open ones whose upstream is unavailable, return simulated items flagged tf:synthetic.",
+    "inputSchema": {
+      "properties": {
+        "bbox": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "collection": {
+          "type": "string"
+        },
+        "datetime": {
+          "type": "string"
+        },
+        "limit": {
+          "default": 10,
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "max_cloud": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "collection"
+      ],
+      "type": "object"
+    },
+    "name": "search_items",
+    "title": "Search items (scenes)"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "All data providers (space agencies, commercial operators, academic producers) with their collection counts.",
+    "inputSchema": {
+      "properties": {},
+      "type": "object"
+    },
+    "name": "list_providers",
+    "title": "List providers"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Overview of the TerraFabric Ontology: modules, classes, properties and counts. Use this first to learn the vocabulary for query_graph.",
+    "inputSchema": {
+      "properties": {
+        "module": {
+          "enum": [
+            "actors",
+            "observation",
+            "data",
+            "commerce",
+            "agentic",
+            "c2"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "describe_ontology",
+    "title": "Describe the TerraFabric ontology"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "All triples about a class, property, vocabulary term or catalog entity, e.g. 'tf:Collection', 'tf:gsdMeters', 'tf:modality-sar', 'tfr:collection/sentinel-2-l2a'.",
+    "inputSchema": {
+      "properties": {
+        "term": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "term"
+      ],
+      "type": "object"
+    },
+    "name": "describe_term",
+    "title": "Describe an ontology term or entity"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Linked-data-fragments style triple pattern query over the full knowledge graph (ontology + catalog). Any of s/p/o may be omitted as a wildcard. Use CURIEs (tf:, tfr:, dct:, ...). Literal objects match by value.",
+    "inputSchema": {
+      "properties": {
+        "limit": {
+          "default": 100,
+          "maximum": 1000,
+          "type": "integer"
+        },
+        "o": {
+          "type": "string"
+        },
+        "p": {
+          "type": "string"
+        },
+        "s": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "query_graph",
+    "title": "Triple-pattern query"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Price a data acquisition. Open data returns a $0 quote. Commercial data is priced by area × rate with minimum area, licence tier uplift and (for tasking) priority uplift. Quotes are valid for 24h.",
+    "inputSchema": {
+      "properties": {
+        "aoi": {
+          "description": "Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.",
+          "oneOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 4,
+              "minItems": 4,
+              "type": "array"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "collection": {
+          "type": "string"
+        },
+        "datetime": {
+          "type": "string"
+        },
+        "license_tier": {
+          "enum": [
+            "single-org",
+            "multi-org",
+            "government-wide",
+            "public-release"
+          ],
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "archive",
+            "tasking",
+            "subscription"
+          ],
+          "type": "string"
+        },
+        "months": {
+          "maximum": 36,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "priority": {
+          "enum": [
+            "standard",
+            "priority",
+            "urgent",
+            "flash"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "collection",
+        "aoi"
+      ],
+      "type": "object"
+    },
+    "name": "get_quote",
+    "title": "Get a price quote"
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "readOnlyHint": false
+    },
+    "description": "Principal-issued spending policy for an agent: per-order limit, total budget and permitted licence tiers. Orders outside the mandate wait for approval. Issuing returns a principal_token once; changing an existing mandate requires it. An agent cannot issue its own mandate.",
+    "inputSchema": {
+      "properties": {
+        "agent_id": {
+          "type": "string"
+        },
+        "allowed_license_tiers": {
+          "items": {
+            "enum": [
+              "single-org",
+              "multi-org",
+              "government-wide",
+              "public-release"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "budget_usd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "max_order_usd": {
+          "minimum": 0,
+          "type": "number"
+        },
+        "principal": {
+          "type": "string"
+        },
+        "principal_token": {
+          "description": "Required to change an existing mandate.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "agent_id",
+        "principal",
+        "max_order_usd",
+        "budget_usd"
+      ],
+      "type": "object"
+    },
+    "name": "set_mandate",
+    "title": "Set agent spending mandate"
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true,
+      "readOnlyHint": false
+    },
+    "description": "Order from a quote on behalf of the calling agent. Within mandate → confirmed; otherwise 'awaiting_approval' with an approve action for the principal. Commits spend.",
+    "inputSchema": {
+      "properties": {
+        "agent_id": {
+          "description": "Calling agent id (or send x-agent-id header).",
+          "type": "string"
+        },
+        "quote_id": {
+          "type": "string"
+        },
+        "reference": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "quote_id"
+      ],
+      "type": "object"
+    },
+    "name": "place_order",
+    "title": "Place an order"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Order status, history, delivery links and next actions.",
+    "inputSchema": {
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "name": "get_order",
+    "title": "Get order status"
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true,
+      "readOnlyHint": false
+    },
+    "description": "Approve an order that exceeded an agent's mandate. Requires the principal token issued with that agent's mandate (or the operator key). Must only be invoked on explicit instruction from the human principal; an agent never holds its own principal's token.",
+    "inputSchema": {
+      "properties": {
+        "approver": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "principal_token": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "approver",
+        "principal_token"
+      ],
+      "type": "object"
+    },
+    "name": "approve_order",
+    "title": "Approve an order (principal)"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Given an AOI, time window and constraints, rank every source (free archive, commercial archive, tasking) by expected collections, time-to-first-data, resolution and cost, and propose a layered collection plan.",
+    "inputSchema": {
+      "properties": {
+        "all_weather": {
+          "description": "Require collection through cloud.",
+          "type": "boolean"
+        },
+        "aoi": {
+          "description": "Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.",
+          "oneOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 4,
+              "minItems": 4,
+              "type": "array"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "budget_usd": {
+          "type": "number"
+        },
+        "end": {
+          "description": "Window end (default start + 72h).",
+          "format": "date-time",
+          "type": "string"
+        },
+        "include_commercial": {
+          "default": true,
+          "type": "boolean"
+        },
+        "include_free": {
+          "default": true,
+          "type": "boolean"
+        },
+        "intent": {
+          "description": "Plain-language information need.",
+          "type": "string"
+        },
+        "license_tier": {
+          "enum": [
+            "single-org",
+            "multi-org",
+            "government-wide",
+            "public-release"
+          ],
+          "type": "string"
+        },
+        "max_gsd_m": {
+          "description": "Maximum acceptable ground sample distance (m).",
+          "type": "number"
+        },
+        "max_latency_hours": {
+          "type": "number"
+        },
+        "modalities": {
+          "items": {
+            "enum": [
+              "optical",
+              "multispectral",
+              "hyperspectral",
+              "thermal",
+              "sar",
+              "lidar",
+              "elevation",
+              "atmospheric",
+              "landcover",
+              "rf",
+              "ais",
+              "video",
+              "3d",
+              "vector"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "night": {
+          "description": "Require night capability.",
+          "type": "boolean"
+        },
+        "start": {
+          "description": "Window start (default now).",
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "aoi"
+      ],
+      "type": "object"
+    },
+    "name": "assess_coverage",
+    "title": "Assess coverage for a requirement (C2)"
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": true,
+      "readOnlyHint": false
+    },
+    "description": "Task a sensor to satisfy a collection requirement. If no collection is given the best taskable option is chosen. Creates a quote and a tracked tasking request.",
+    "inputSchema": {
+      "properties": {
+        "collection": {
+          "type": "string"
+        },
+        "marking": {
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "standard",
+            "priority",
+            "urgent",
+            "flash"
+          ],
+          "type": "string"
+        },
+        "requester": {
+          "type": "string"
+        },
+        "requirement": {
+          "properties": {
+            "all_weather": {
+              "description": "Require collection through cloud.",
+              "type": "boolean"
+            },
+            "aoi": {
+              "description": "Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.",
+              "oneOf": [
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "maxItems": 4,
+                  "minItems": 4,
+                  "type": "array"
+                },
+                {
+                  "type": "object"
+                }
+              ]
+            },
+            "budget_usd": {
+              "type": "number"
+            },
+            "end": {
+              "description": "Window end (default start + 72h).",
+              "format": "date-time",
+              "type": "string"
+            },
+            "include_commercial": {
+              "default": true,
+              "type": "boolean"
+            },
+            "include_free": {
+              "default": true,
+              "type": "boolean"
+            },
+            "intent": {
+              "description": "Plain-language information need.",
+              "type": "string"
+            },
+            "license_tier": {
+              "enum": [
+                "single-org",
+                "multi-org",
+                "government-wide",
+                "public-release"
+              ],
+              "type": "string"
+            },
+            "max_gsd_m": {
+              "description": "Maximum acceptable ground sample distance (m).",
+              "type": "number"
+            },
+            "max_latency_hours": {
+              "type": "number"
+            },
+            "modalities": {
+              "items": {
+                "enum": [
+                  "optical",
+                  "multispectral",
+                  "hyperspectral",
+                  "thermal",
+                  "sar",
+                  "lidar",
+                  "elevation",
+                  "atmospheric",
+                  "landcover",
+                  "rf",
+                  "ais",
+                  "video",
+                  "3d",
+                  "vector"
+                ],
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "night": {
+              "description": "Require night capability.",
+              "type": "boolean"
+            },
+            "start": {
+              "description": "Window start (default now).",
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          "required": [
+            "aoi"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "requirement"
+      ],
+      "type": "object"
+    },
+    "name": "submit_tasking",
+    "title": "Submit a tasking request (C2)"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Status and timeline of a tasking request.",
+    "inputSchema": {
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "name": "get_tasking",
+    "title": "Get tasking status (C2)"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Every open-licence, non-restricted source in the fabric with its licence, required attribution and direct access endpoints (STAC APIs, S3 buckets). No commercial data.",
+    "inputSchema": {
+      "properties": {},
+      "type": "object"
+    },
+    "name": "osint_sources",
+    "title": "List open (OSINT) sources"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Rank open-licence sources for an AOI and time window (past windows use open archives), with licence, attribution, access endpoints and sample scenes. Never returns commercial data or costs.",
+    "inputSchema": {
+      "properties": {
+        "all_weather": {
+          "type": "boolean"
+        },
+        "aoi": {
+          "description": "Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.",
+          "oneOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 4,
+              "minItems": 4,
+              "type": "array"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "end": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "intent": {
+          "type": "string"
+        },
+        "max_gsd_m": {
+          "type": "number"
+        },
+        "modalities": {
+          "items": {
+            "enum": [
+              "optical",
+              "multispectral",
+              "hyperspectral",
+              "thermal",
+              "sar",
+              "lidar",
+              "elevation",
+              "atmospheric",
+              "landcover",
+              "rf",
+              "ais",
+              "video",
+              "3d",
+              "vector"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "night": {
+          "type": "boolean"
+        },
+        "start": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "aoi"
+      ],
+      "type": "object"
+    },
+    "name": "osint_assess",
+    "title": "Assess open-data coverage (OSINT)"
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "readOnlyHint": false
+    },
+    "description": "Create a private watch that records new open-data acquisitions over an AOI. The returned id is the only way to read it; keep it.",
+    "inputSchema": {
+      "properties": {
+        "aoi": {
+          "description": "Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.",
+          "oneOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "maxItems": 4,
+              "minItems": 4,
+              "type": "array"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "max_gsd_m": {
+          "type": "number"
+        },
+        "modalities": {
+          "items": {
+            "enum": [
+              "optical",
+              "multispectral",
+              "hyperspectral",
+              "thermal",
+              "sar",
+              "lidar",
+              "elevation",
+              "atmospheric",
+              "landcover",
+              "rf",
+              "ais",
+              "video",
+              "3d",
+              "vector"
+            ],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "aoi"
+      ],
+      "type": "object"
+    },
+    "name": "create_watch",
+    "title": "Watch an AOI for new open data (OSINT)"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "A watch with its most recent open-data matches (newest first).",
+    "inputSchema": {
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "name": "get_watch",
+    "title": "Get watch matches (OSINT)"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Read-only SPARQL 1.1 over the full TerraFabric graph (ontology + catalog). Use PREFIX tf: <https://terrafabric.world/ont#> and tfr: <https://terrafabric.world/id/>. SELECT/ASK return SPARQL JSON results (capped at 10,000 rows, flagged truncated); CONSTRUCT/DESCRIBE return Turtle. Updates and SERVICE are refused.",
+    "inputSchema": {
+      "properties": {
+        "query": {
+          "maxLength": 10240,
+          "type": "string"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "type": "object"
+    },
+    "name": "sparql_query",
+    "title": "SPARQL query over the knowledge graph"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "When will this collection's satellites next pass over an area? SGP4 propagation of public orbital elements for the open constellations (Sentinel-1/2/3/5P, Landsat, MODIS, VIIRS, ICESat-2, ISS instruments, NISAR). Optical collections mark night passes unusable. Geometry only: not every pass is imaged and cloud is not modelled. Window defaults to the next 7 days, max 14.",
+    "inputSchema": {
+      "properties": {
+        "bbox": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "collection": {
+          "type": "string"
+        },
+        "end": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "start": {
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "collection",
+        "bbox"
+      ],
+      "type": "object"
+    },
+    "name": "predict_passes",
+    "title": "Predict satellite passes over an AOI"
+  }
+]
