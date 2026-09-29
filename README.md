@@ -1,6 +1,6 @@
 # tfab: the TerraFabric command line
 
-`tfab` is an agent-first client for [TerraFabric](https://terrafabric.world), a meta-repository of open and commercial Earth observation data. Each server tool is a command with typed flags. Every command has a JSON input schema, a declared side effect and a stable exit status, and the whole program is described by an ontology linked to the TerraFabric knowledge graph.
+`tfab` is an agent-first client for [TerraFabric](https://terrafabric.world), the agentic-first geospatial intelligence market: imagery, signals, tracks, weather, infrastructure, industry and economic data from open, commercial and government sources. Each server tool is a command with typed flags. Every command has a JSON input schema, a declared side effect and a stable exit status, and the whole program is described by an ontology linked to the TerraFabric knowledge graph.
 
 ```sh
 cargo install terrafabric      # installs the `tfab` binary
