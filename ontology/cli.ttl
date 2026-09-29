@@ -13,7 +13,7 @@
     dct:description "Describes command-line programs for agents: commands, their inputs, side effects, required credentials, results and exit statuses, linked to the TerraFabric ontology's tools and classes." ;
     dct:title "TerraFabric CLI Ontology" ;
     owl:imports <https://terrafabric.world/ont> ;
-    owl:versionInfo "0.1.1" .
+    owl:versionInfo "0.1.2" .
 
 tf:CliCommand a owl:Class ;
     rdfs:comment "One invocable command line. Its inputs are tf:CliOption values; running it has one tf:SideEffect." ;
@@ -371,7 +371,7 @@ tf:valueType a owl:ObjectProperty ;
     schema:description "tfab: agent-first command line for TerraFabric, the agentic geospatial intelligence market (discovery, pricing, orders, C2 tasking and OSINT), with a self-describing ontology and an MCP server" ;
     schema:isPartOf <https://terrafabric.world/> ;
     schema:name "tfab" ;
-    schema:softwareVersion "0.1.1" ;
+    schema:softwareVersion "0.1.2" ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/collections-search> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/collections-get> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/items-search> ;

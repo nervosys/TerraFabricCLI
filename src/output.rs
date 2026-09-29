@@ -103,7 +103,10 @@ fn text(v: &Value) -> String {
             .or_else(|| pick("meaning"))
             .or_else(|| pick("description"))
             .unwrap_or_default();
-        let label: String = label.chars().take(100).collect();
+        // Server text goes straight to a terminal here, so drop control
+        // characters: an escape sequence could otherwise rewrite the display.
+        let id = printable(&id);
+        let label: String = printable(&label).chars().take(100).collect();
         if id.is_empty() && label.is_empty() {
             out.push_str(&format!(
                 "{}\n",
@@ -114,6 +117,11 @@ fn text(v: &Value) -> String {
         }
     }
     out
+}
+
+/// Text without control characters (ANSI escapes, carriage returns, bells).
+fn printable(s: &str) -> String {
+    s.chars().filter(|c| !c.is_control()).collect()
 }
 
 pub fn emit(v: &Value, f: Format) -> Result<(), Problem> {
@@ -134,6 +142,15 @@ pub fn emit(v: &Value, f: Format) -> Result<(), Problem> {
 mod tests {
     use super::*;
     use serde_json::json;
+
+    #[test]
+    fn text_output_cannot_carry_terminal_escapes() {
+        let v =
+            json!({ "results": [{ "id": "a\u{1b}[2Jb", "title": "x\u{1b}]0;pwned\u{7}y\rz" }] });
+        let t = render(&v, Format::Text);
+        assert!(!t.chars().any(|c| c.is_control() && c != '\n'), "{t:?}");
+        assert!(t.contains("a[2Jb") && t.contains("x]0;pwnedyz"));
+    }
 
     #[test]
     fn ndjson_streams_lists() {
