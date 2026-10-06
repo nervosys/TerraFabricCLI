@@ -435,6 +435,7 @@ fn local(which: Local, m: &ArgMatches, g: &Globals) -> Result<(), Problem> {
                         params: vec![],
                         effect: Effect::CommitsSpend,
                         idempotent: false,
+                        destructive: true,
                         auth: spec::Auth::None,
                         returns: "rdfs:Resource".into(),
                         examples: vec![],
@@ -663,7 +664,7 @@ mod tests {
     #[test]
     fn invalid_input_is_exit_9_before_any_request() {
         let e = run(argv(
-            "--base-url https://unreachable.invalid collections search --limit 500",
+            "--base-url https://unreachable.invalid collections search --limit 1001",
         ))
         .unwrap_err();
         assert_eq!(e.code(), 9, "{:?}", e);

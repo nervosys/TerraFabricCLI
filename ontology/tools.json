@@ -26,13 +26,17 @@
           "minItems": 4,
           "type": "array"
         },
+        "cursor": {
+          "description": "Opaque continuation from the previous response",
+          "type": "string"
+        },
         "datetime": {
           "description": "ISO interval 'start/end'; '..' for open ends.",
           "type": "string"
         },
         "limit": {
           "default": 10,
-          "maximum": 100,
+          "maximum": 1000,
           "minimum": 1,
           "type": "integer"
         },
@@ -43,11 +47,13 @@
         "modality": {
           "items": {
             "enum": [
+              "earth-observation",
               "optical",
               "multispectral",
               "hyperspectral",
               "thermal",
               "sar",
+              "radar-altimetry",
               "lidar",
               "elevation",
               "atmospheric",
@@ -76,11 +82,34 @@
               "energy",
               "ai-compute",
               "robotics",
+              "microwave",
+              "bathymetry",
+              "hydrography",
+              "ocean-model",
+              "acoustic",
+              "soil",
+              "hydrology",
+              "aviation",
+              "gnss",
+              "space-weather",
+              "magnetic",
+              "gravity",
+              "seismic",
+              "orbital",
+              "weather-radar",
               "defense-industry"
             ],
             "type": "string"
           },
           "type": "array"
+        },
+        "mode": {
+          "default": "auto",
+          "enum": [
+            "auto",
+            "index"
+          ],
+          "type": "string"
         },
         "night": {
           "type": "boolean"
@@ -98,6 +127,7 @@
         "sort": {
           "enum": [
             "relevance",
+            "weather",
             "gsd",
             "revisit",
             "latency",
@@ -543,11 +573,13 @@
         "modalities": {
           "items": {
             "enum": [
+              "earth-observation",
               "optical",
               "multispectral",
               "hyperspectral",
               "thermal",
               "sar",
+              "radar-altimetry",
               "lidar",
               "elevation",
               "atmospheric",
@@ -576,6 +608,21 @@
               "energy",
               "ai-compute",
               "robotics",
+              "microwave",
+              "bathymetry",
+              "hydrography",
+              "ocean-model",
+              "acoustic",
+              "soil",
+              "hydrology",
+              "aviation",
+              "gnss",
+              "space-weather",
+              "magnetic",
+              "gravity",
+              "seismic",
+              "orbital",
+              "weather-radar",
               "defense-industry"
             ],
             "type": "string"
@@ -689,11 +736,13 @@
             "modalities": {
               "items": {
                 "enum": [
+                  "earth-observation",
                   "optical",
                   "multispectral",
                   "hyperspectral",
                   "thermal",
                   "sar",
+                  "radar-altimetry",
                   "lidar",
                   "elevation",
                   "atmospheric",
@@ -722,6 +771,21 @@
                   "energy",
                   "ai-compute",
                   "robotics",
+                  "microwave",
+                  "bathymetry",
+                  "hydrography",
+                  "ocean-model",
+                  "acoustic",
+                  "soil",
+                  "hydrology",
+                  "aviation",
+                  "gnss",
+                  "space-weather",
+                  "magnetic",
+                  "gravity",
+                  "seismic",
+                  "orbital",
+                  "weather-radar",
                   "defense-industry"
                 ],
                 "type": "string"
@@ -825,11 +889,13 @@
         "modalities": {
           "items": {
             "enum": [
+              "earth-observation",
               "optical",
               "multispectral",
               "hyperspectral",
               "thermal",
               "sar",
+              "radar-altimetry",
               "lidar",
               "elevation",
               "atmospheric",
@@ -858,6 +924,21 @@
               "energy",
               "ai-compute",
               "robotics",
+              "microwave",
+              "bathymetry",
+              "hydrography",
+              "ocean-model",
+              "acoustic",
+              "soil",
+              "hydrology",
+              "aviation",
+              "gnss",
+              "space-weather",
+              "magnetic",
+              "gravity",
+              "seismic",
+              "orbital",
+              "weather-radar",
               "defense-industry"
             ],
             "type": "string"
@@ -911,11 +992,13 @@
         "modalities": {
           "items": {
             "enum": [
+              "earth-observation",
               "optical",
               "multispectral",
               "hyperspectral",
               "thermal",
               "sar",
+              "radar-altimetry",
               "lidar",
               "elevation",
               "atmospheric",
@@ -944,6 +1027,21 @@
               "energy",
               "ai-compute",
               "robotics",
+              "microwave",
+              "bathymetry",
+              "hydrography",
+              "ocean-model",
+              "acoustic",
+              "soil",
+              "hydrology",
+              "aviation",
+              "gnss",
+              "space-weather",
+              "magnetic",
+              "gravity",
+              "seismic",
+              "orbital",
+              "weather-radar",
               "defense-industry"
             ],
             "type": "string"
@@ -952,6 +1050,11 @@
         },
         "name": {
           "type": "string"
+        },
+        "real_thermal": {
+          "default": false,
+          "description": "Real NASA FIRMS indexed observations; use bounding-box AOI, thermal modality and no max_gsd_m. Returns the newest 100 matches and total indexed count, never simulated scenes.",
+          "type": "boolean"
         }
       },
       "required": [
@@ -981,6 +1084,477 @@
     },
     "name": "get_watch",
     "title": "Get watch matches (OSINT)"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Stateless analyst-supplied hidden-state inference, candidate observation ranking and label evaluation. No trained classifier, verified labels or physical fire-risk forecast is bundled. Missing passes are unobserved, never invented absences. Does not schedule or submit satellite tasking.",
+    "inputSchema": {
+      "properties": {
+        "model": {
+          "properties": {
+            "abstention_threshold": {
+              "default": 0.8,
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "candidate_passes": {
+              "items": {
+                "properties": {
+                  "detectability": {
+                    "items": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "maxItems": 65,
+                    "minItems": 2,
+                    "type": "array"
+                  },
+                  "id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "source": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "steps_ahead": {
+                    "maximum": 30,
+                    "minimum": 1,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id",
+                  "source",
+                  "steps_ahead",
+                  "detectability"
+                ],
+                "type": "object"
+              },
+              "maxItems": 64,
+              "type": "array"
+            },
+            "location": {
+              "description": "WGS84 geometry, bbox or longitude/latitude for an optional derived footprint",
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "model_provenance": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "observations": {
+              "description": "Strictly ordered regular model steps; null detected means unobserved, false means observed absence",
+              "items": {
+                "properties": {
+                  "datetime": {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  "detectability": {
+                    "items": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "maxItems": 65,
+                    "minItems": 2,
+                    "type": "array"
+                  },
+                  "detected": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "label": {
+                    "description": "Evaluation only; never used in inference",
+                    "properties": {
+                      "active": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "class": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "class",
+                      "source"
+                    ],
+                    "type": "object"
+                  },
+                  "source": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "datetime",
+                  "detectability",
+                  "source"
+                ],
+                "type": "object"
+              },
+              "maxItems": 366,
+              "minItems": 1,
+              "type": "array"
+            },
+            "osm_completeness": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "prior": {
+              "items": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "maxItems": 65,
+              "minItems": 2,
+              "type": "array"
+            },
+            "simulated": {
+              "default": true,
+              "type": "boolean"
+            },
+            "states": {
+              "items": {
+                "properties": {
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "class": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "phase": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "class",
+                  "phase",
+                  "active"
+                ],
+                "type": "object"
+              },
+              "maxItems": 65,
+              "minItems": 2,
+              "type": "array"
+            },
+            "transition": {
+              "items": {
+                "items": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "maxItems": 65,
+                "minItems": 2,
+                "type": "array"
+              },
+              "maxItems": 65,
+              "minItems": 2,
+              "type": "array"
+            }
+          },
+          "required": [
+            "states",
+            "prior",
+            "transition",
+            "observations",
+            "model_provenance"
+          ],
+          "type": "object",
+          "x-sensitive": true
+        }
+      },
+      "required": [
+        "model"
+      ],
+      "type": "object"
+    },
+    "name": "analyze_thermal",
+    "title": "Analyze thermal evidence (OSINT)"
+  },
+  {
+    "annotations": {
+      "destructiveHint": false,
+      "idempotentHint": false,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    },
+    "description": "Explicitly persist the supplied model, inference and optional complete indexed NASA snapshot for a real watch AOI and model time window. Evidence never changes inference. Limits: 10,000 detections / 8 MiB per packet, 500 packets / 256 MiB total. Keep the returned capability ID private; it grants read/delete access. No public listing or user-account isolation. Not scheduled monitoring.",
+    "inputSchema": {
+      "properties": {
+        "model": {
+          "properties": {
+            "abstention_threshold": {
+              "default": 0.8,
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "candidate_passes": {
+              "items": {
+                "properties": {
+                  "detectability": {
+                    "items": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "maxItems": 65,
+                    "minItems": 2,
+                    "type": "array"
+                  },
+                  "id": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "source": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "steps_ahead": {
+                    "maximum": 30,
+                    "minimum": 1,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id",
+                  "source",
+                  "steps_ahead",
+                  "detectability"
+                ],
+                "type": "object"
+              },
+              "maxItems": 64,
+              "type": "array"
+            },
+            "location": {
+              "description": "WGS84 geometry, bbox or longitude/latitude for an optional derived footprint",
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "model_provenance": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "observations": {
+              "description": "Strictly ordered regular model steps; null detected means unobserved, false means observed absence",
+              "items": {
+                "properties": {
+                  "datetime": {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  "detectability": {
+                    "items": {
+                      "maximum": 1,
+                      "minimum": 0,
+                      "type": "number"
+                    },
+                    "maxItems": 65,
+                    "minItems": 2,
+                    "type": "array"
+                  },
+                  "detected": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "label": {
+                    "description": "Evaluation only; never used in inference",
+                    "properties": {
+                      "active": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "class": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "source": {
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "class",
+                      "source"
+                    ],
+                    "type": "object"
+                  },
+                  "source": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "datetime",
+                  "detectability",
+                  "source"
+                ],
+                "type": "object"
+              },
+              "maxItems": 366,
+              "minItems": 1,
+              "type": "array"
+            },
+            "osm_completeness": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            "prior": {
+              "items": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "maxItems": 65,
+              "minItems": 2,
+              "type": "array"
+            },
+            "simulated": {
+              "default": true,
+              "type": "boolean"
+            },
+            "states": {
+              "items": {
+                "properties": {
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "class": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "phase": {
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "class",
+                  "phase",
+                  "active"
+                ],
+                "type": "object"
+              },
+              "maxItems": 65,
+              "minItems": 2,
+              "type": "array"
+            },
+            "transition": {
+              "items": {
+                "items": {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                "maxItems": 65,
+                "minItems": 2,
+                "type": "array"
+              },
+              "maxItems": 65,
+              "minItems": 2,
+              "type": "array"
+            }
+          },
+          "required": [
+            "states",
+            "prior",
+            "transition",
+            "observations",
+            "model_provenance"
+          ],
+          "type": "object",
+          "x-sensitive": true
+        },
+        "watch_id": {
+          "description": "Optional private ID of a real NASA thermal watch",
+          "type": "string",
+          "x-sensitive": true
+        }
+      },
+      "required": [
+        "model"
+      ],
+      "type": "object"
+    },
+    "name": "save_thermal_run",
+    "title": "Save private thermal run (OSINT)"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Read an immutable saved model, analysis and geolocated evidence packet using its private capability ID. Retain source geometry, timestamps, provenance and simulation labels. No listing or live refresh of the stored packet.",
+    "inputSchema": {
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "type": "string",
+          "x-sensitive": true
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "name": "get_thermal_run",
+    "title": "Read private thermal run (OSINT)"
+  },
+  {
+    "annotations": {
+      "destructiveHint": true,
+      "idempotentHint": true,
+      "openWorldHint": false,
+      "readOnlyHint": false
+    },
+    "description": "Delete only the saved run identified by its private capability ID. Does not delete its linked watch or public NASA index evidence. Use only when deletion is requested.",
+    "inputSchema": {
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "type": "string",
+          "x-sensitive": true
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "type": "object"
+    },
+    "name": "delete_thermal_run",
+    "title": "Delete private thermal run (OSINT)"
   },
   {
     "annotations": {

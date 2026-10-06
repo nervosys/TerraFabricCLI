@@ -35,7 +35,7 @@ tfab collections search --q radar --bbox 4.0,51.9,4.3,52.0 --limit 5
 | `mandates` | `set` (principal) |
 | `orders` | `place` (spend), `get`, `approve` (principal, spend) |
 | `c2` | `coverage`, `task` (spend), `status`. These need a mission credential. |
-| `osint` | `sources`, `assess`, `watch-create`, `watch-get` |
+| `osint` | `sources`, `assess`, `watch-create`, `watch-get`, `thermal-analyze`, `thermal-save`, `thermal-get`, `thermal-delete` |
 | local | `describe`, `tools`, `schema`, `guide`, `exit-codes`, `config`, `doctor`, `call`, `mcp`, `completions` |
 
 Flags are named after the tool's JSON keys, with `_` written as `-`.
@@ -43,6 +43,12 @@ Flags are named after the tool's JSON keys, with `_` written as `-`.
 - **Arrays:** take comma-separated values or repeated flags.
 - **JSON values:** any value starting with `{` or `[` is parsed as JSON.
 - **Whole argument object:** pass it with `--input file.json` or `--input -`. Flags override its fields.
+
+## Thermal analysis and private packets
+
+`tfab osint thermal-analyze --input thermal-args.json` analyzes an argument object containing `{"model": {...}}`. `thermal-save` accepts the same object with an optional `watch_id`; `thermal-get` and `thermal-delete` accept `--id file:private-run-id.txt`. Delete permanently removes that saved packet and is marked destructive in tool descriptions.
+
+Model objects and private run/watch IDs are redacted from dry-run request output. Use `--model file:model.json` or `--input` to keep models out of shell history. Results intentionally include the requested analysis or private packet; protect output files and capability IDs. Packets are capability-protected, with no public listing or account isolation. This uses analyst-supplied probabilities, not a bundled trained or calibrated classifier.
 
 ## Configuration
 

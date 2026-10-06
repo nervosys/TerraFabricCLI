@@ -160,6 +160,11 @@ pub const ROUTES: &[Route] = &[
     Route { tool: "create_watch", path: &["osint", "watch-create"], auth: Auth::None, returns: "tf:AreaOfInterest",
         examples: &["tfab osint watch-create --aoi 4.0,51.9,4.3,52.0 --name rotterdam"] },
     Route { tool: "get_watch", path: &["osint", "watch-get"], auth: Auth::None, returns: "tf:AreaOfInterest", examples: &["tfab osint watch-get --id w_123"] },
+    Route { tool: "analyze_thermal", path: &["osint", "thermal-analyze"], auth: Auth::None, returns: "tf:AgentAction", examples: &["tfab osint thermal-analyze --input thermal-args.json"] },
+    Route { tool: "save_thermal_run", path: &["osint", "thermal-save"], auth: Auth::None, returns: "tf:AgentAction", examples: &["tfab osint thermal-save --input thermal-args.json"] },
+    Route { tool: "get_thermal_run", path: &["osint", "thermal-get"], auth: Auth::None, returns: "tf:AgentAction", examples: &["tfab osint thermal-get --id tr_PRIVATE"] },
+    Route { tool: "delete_thermal_run", path: &["osint", "thermal-delete"], auth: Auth::None, returns: "tf:AgentAction", examples: &["tfab osint thermal-delete --id tr_PRIVATE"] },
+
 ];
 
 /// Group summaries, shown in help and typed in the ontology.
@@ -399,6 +404,7 @@ pub struct Command {
     pub params: Vec<Param>,
     pub effect: Effect,
     pub idempotent: bool,
+    pub destructive: bool,
     pub auth: Auth,
     pub returns: String,
     pub examples: Vec<String>,
@@ -437,7 +443,7 @@ impl Command {
     pub fn annotations(&self) -> Value {
         json!({
             "readOnlyHint": self.effect == Effect::ReadOnly,
-            "destructiveHint": false,
+            "destructiveHint": self.destructive,
             "idempotentHint": self.idempotent || self.effect == Effect::ReadOnly,
             "openWorldHint": self.effect == Effect::CommitsSpend,
         })
@@ -479,7 +485,7 @@ pub fn params_of(schema: &Value) -> Vec<Param> {
                         .and_then(Value::as_str)
                         .unwrap_or("")
                         .to_string(),
-                    secret: k.contains("token") || k.contains("secret"),
+                    secret: k.contains("token") || k.contains("secret") || s["x-sensitive"] == true,
                 })
                 .collect()
         })
@@ -521,6 +527,7 @@ pub fn commands() -> Vec<Command> {
                 schema,
                 effect,
                 idempotent,
+                destructive: t["annotations"]["destructiveHint"] == true,
                 auth: route.auth,
                 returns: route.returns.to_string(),
                 examples: route.examples.iter().map(|s| s.to_string()).collect(),

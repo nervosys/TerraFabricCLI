@@ -129,20 +129,25 @@ fn check(schema: &Value, v: &Value, at: &str, errs: &mut Vec<String>) {
         }
         return;
     }
-    let ty = schema.get("type").and_then(Value::as_str);
-    let ok = match ty {
-        Some("object") => v.is_object(),
-        Some("array") => v.is_array(),
-        Some("string") => v.is_string(),
-        Some("boolean") => v.is_boolean(),
-        Some("integer") => v.as_i64().is_some() || v.as_u64().is_some(),
-        Some("number") => v.is_number(),
+    let types: Vec<&str> = match &schema["type"] {
+        Value::String(t) => vec![t.as_str()],
+        Value::Array(types) => types.iter().filter_map(Value::as_str).collect(),
+        _ => Vec::new(),
+    };
+    let matches = |ty: &str| match ty {
+        "object" => v.is_object(),
+        "array" => v.is_array(),
+        "string" => v.is_string(),
+        "boolean" => v.is_boolean(),
+        "integer" => v.as_i64().is_some() || v.as_u64().is_some(),
+        "number" => v.is_number(),
+        "null" => v.is_null(),
         _ => true,
     };
-    if !ok {
+    if !types.is_empty() && !types.iter().any(|ty| matches(ty)) {
         errs.push(format!(
             "{here}: expected {}, got {}",
-            ty.unwrap_or("?"),
+            types.join(" or "),
             kind(v)
         ));
         return;
@@ -312,7 +317,7 @@ mod tests {
         assert!(validate(s, &json!({ "q": "radar", "limit": 5, "access": "free" })).is_empty());
         let errs = validate(
             s,
-            &json!({ "limit": 500, "access": "gratis", "bbox": [1, 2, 3] }),
+            &json!({ "limit": 1001, "access": "gratis", "bbox": [1, 2, 3] }),
         );
         assert_eq!(errs.len(), 3, "{errs:?}");
         assert!(
@@ -348,5 +353,27 @@ mod tests {
             json!({ "q": "x", "limit": 3 })
         );
         assert!(merge(Some(json!([1])), Map::new()).is_err());
+    }
+    #[test]
+    fn nullable_types_and_sensitive_thermal_arguments_are_handled() {
+        let schema = json!({"type":["boolean","null"]});
+        assert!(validate(&schema, &json!(null)).is_empty());
+        assert!(validate(&schema, &json!(false)).is_empty());
+        assert!(!validate(&schema, &json!("false")).is_empty());
+        let command = find(&["osint", "thermal-get"]).unwrap();
+        assert!(command.params[0].secret);
+        assert_eq!(
+            redact(&json!({"id":"tr_private"}), &command.params)["id"],
+            "[redacted]"
+        );
+        let command = find(&["osint", "thermal-save"]).unwrap();
+        let input = json!({"model":{"private_site":"fixture"},"watch_id":"w_private"});
+        let safe = redact(&input, &command.params);
+        assert_eq!(safe["model"], "[redacted]");
+        assert_eq!(safe["watch_id"], "[redacted]");
+        assert_eq!(
+            find(&["osint", "thermal-delete"]).unwrap().annotations()["destructiveHint"],
+            true
+        );
     }
 }
