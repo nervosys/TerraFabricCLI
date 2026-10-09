@@ -120,7 +120,7 @@ fn text(v: &Value) -> String {
 }
 
 /// Text without control characters (ANSI escapes, carriage returns, bells).
-fn printable(s: &str) -> String {
+pub fn printable(s: &str) -> String {
     s.chars().filter(|c| !c.is_control()).collect()
 }
 

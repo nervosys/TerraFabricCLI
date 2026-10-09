@@ -13,7 +13,7 @@
     dct:description "Describes command-line programs for agents: commands, their inputs, side effects, required credentials, results and exit statuses, linked to the TerraFabric ontology's tools and classes." ;
     dct:title "TerraFabric CLI Ontology" ;
     owl:imports <https://terrafabric.world/ont> ;
-    owl:versionInfo "0.1.3" .
+    owl:versionInfo "0.1.4" .
 
 tf:CliCommand a owl:Class ;
     rdfs:comment "One invocable command line. Its inputs are tf:CliOption values; running it has one tf:SideEffect." ;
@@ -371,7 +371,7 @@ tf:valueType a owl:ObjectProperty ;
     schema:description "tfab: agent-first command line for TerraFabric, the agentic geospatial intelligence market (discovery, pricing, orders, C2 tasking and OSINT), with a self-describing ontology and an MCP server" ;
     schema:isPartOf <https://terrafabric.world/> ;
     schema:name "tfab" ;
-    schema:softwareVersion "0.1.3" ;
+    schema:softwareVersion "0.1.4" ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/collections-search> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/collections-get> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/items-search> ;
@@ -397,6 +397,9 @@ tf:valueType a owl:ObjectProperty ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/osint-thermal-delete> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/graph-sparql> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/passes-predict> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/plan-observe> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/artifacts-search> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/tracks-get> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/describe> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/tools> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/schema> ;
@@ -405,6 +408,7 @@ tf:valueType a owl:ObjectProperty ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/doctor> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/config> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/call> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/ask> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/mcp> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/completions> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/collections> ;
@@ -413,6 +417,9 @@ tf:valueType a owl:ObjectProperty ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/providers> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/ontology> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/graph> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/plan> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/artifacts> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/tracks> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/quotes> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/mandates> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/orders> ;
@@ -430,6 +437,9 @@ tf:valueType a owl:ObjectProperty ;
     tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_CLIENT_ID> ;
     tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_CLIENT_SECRET> ;
     tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_SCOPES> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_ENGINE> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_MODEL> ;
+    tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_ENGINE_KEY> ;
     tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_MCP_ALLOW_SPEND> ;
     tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_BASE_URL> ;
     tf:readsEnvironment <https://terrafabric.world/id/cli/tfab/env/TFAB_FORMAT> ;
@@ -438,6 +448,119 @@ tf:valueType a owl:ObjectProperty ;
     tf:supportsFormat tf:output-json ;
     tf:supportsFormat tf:output-ndjson ;
     tf:supportsFormat tf:output-text .
+
+<https://terrafabric.world/id/cli/tfab/command/artifacts-search> a tf:RemoteCliCommand ;
+    schema:description "Search the public index of artifact locations (observations, scenes, detections, reports) by area, time, collection and text. Returns GeoJSON features with their source timestamps. Only already indexed public artifacts are returned; follow nextCursor for more." ;
+    schema:encodingType "application/json" ;
+    schema:name "Search indexed artifact locations" ;
+    tf:commandLine "tfab artifacts search" ;
+    tf:example "tfab artifacts search --collection usgs-earthquake-live --bbox -125,32,-114,42 --limit 10" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/bbox> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/collection> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/cursor> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/datetime> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/limit> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/q> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/text> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/artifacts> ;
+    tf:inputSchema "{\"properties\":{\"bbox\":{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},\"collection\":{\"type\":\"string\"},\"cursor\":{\"description\":\"nextCursor from the previous page.\",\"type\":\"integer\"},\"datetime\":{\"description\":\"RFC 3339 instant or interval 'start/end'; '..' for open ends.\",\"type\":\"string\"},\"limit\":{\"default\":25,\"maximum\":100,\"minimum\":1,\"type\":\"integer\"},\"q\":{\"description\":\"Natural-language context, e.g. 'drifting buoys'.\",\"type\":\"string\"},\"text\":{\"description\":\"Words that must all appear in the artifact's native metadata.\",\"type\":\"string\"}},\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/search_artifact_locations> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Item ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/bbox> a tf:CliOption ;
+    schema:multipleValues true ;
+    schema:valueName "BBOX" ;
+    schema:valueRequired false ;
+    tf:argumentKey "bbox" ;
+    tf:optionFlag "bbox" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/collection> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "COLLECTION" ;
+    schema:valueRequired false ;
+    tf:argumentKey "collection" ;
+    tf:optionFlag "collection" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/cursor> a tf:CliOption ;
+    schema:description "nextCursor from the previous page." ;
+    schema:multipleValues false ;
+    schema:valueName "CURSOR" ;
+    schema:valueRequired false ;
+    tf:argumentKey "cursor" ;
+    tf:optionFlag "cursor" ;
+    tf:secret false ;
+    tf:valueType xsd:integer .
+
+<https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/datetime> a tf:CliOption ;
+    schema:description "RFC 3339 instant or interval 'start/end'; '..' for open ends." ;
+    schema:multipleValues false ;
+    schema:valueName "DATETIME" ;
+    schema:valueRequired false ;
+    tf:argumentKey "datetime" ;
+    tf:optionFlag "datetime" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/limit> a tf:CliOption ;
+    schema:maxValue "100.0"^^xsd:decimal ;
+    schema:minValue "1.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "LIMIT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "limit" ;
+    tf:optionFlag "limit" ;
+    tf:secret false ;
+    tf:valueType xsd:integer .
+
+<https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/q> a tf:CliOption ;
+    schema:description "Natural-language context, e.g. 'drifting buoys'." ;
+    schema:multipleValues false ;
+    schema:valueName "Q" ;
+    schema:valueRequired false ;
+    tf:argumentKey "q" ;
+    tf:optionFlag "q" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/artifacts-search/option/text> a tf:CliOption ;
+    schema:description "Words that must all appear in the artifact's native metadata." ;
+    schema:multipleValues false ;
+    schema:valueName "TEXT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "text" ;
+    tf:optionFlag "text" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/ask> a tf:LocalCliCommand ;
+    schema:description "Run an agent on an inference engine you operate (IronWorks, Ollama, vLLM, SGLang, or any OpenAI-compatible endpoint with tool calling) over TerraFabric's remote data. The model's tools are the public read-only server tools, so it can search, plan and quote but never order or task. The question and conversation go only to your engine; TerraFabric receives only the tool calls. Without --engine, the first local engine that answers is used. --dry-run lists the tools without contacting anything." ;
+    schema:name "Ask a question using your own inference engine" ;
+    tf:commandLine "tfab ask" ;
+    tf:example "tfab ask \"Which open radar data covers the Port of Rotterdam?\"" ;
+    tf:example "tfab ask --engine ollama --model ornith-1.5:9b \"Monitor maritime traffic in the Strait of Hormuz\"" ;
+    tf:example "tfab ask --engine http://gpu-box:8000 --model Qwen/Qwen3-30B-A3B \"Compare commercial SAR providers by resolution\"" ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:usesNetwork true .
 
 <https://terrafabric.world/id/cli/tfab/command/c2-coverage> a tf:RemoteCliCommand ;
     schema:description "Given an AOI, time window and constraints, rank every source (free archive, commercial archive, tasking) by expected collections, time-to-first-data, resolution and cost, and propose a layered collection plan." ;
@@ -2167,6 +2290,64 @@ tf:valueType a owl:ObjectProperty ;
     tf:secret false ;
     tf:valueType xsd:dateTime .
 
+<https://terrafabric.world/id/cli/tfab/command/plan-observe> a tf:RemoteCliCommand ;
+    schema:description "Turn an observable and a place into an observation plan, for requests like 'monitor maritime traffic in the Strait of Hormuz'. Returns the resolved area, the data layers that answer the need and a priced bill of materials. Each line is a stored quote valid for 24h; nothing is ordered." ;
+    schema:encodingType "application/json" ;
+    schema:name "Plan an observation" ;
+    tf:commandLine "tfab plan observe" ;
+    tf:example "tfab plan observe --q 'monitor maritime traffic in the Strait of Hormuz'" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/plan-observe/option/q> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/plan-observe/option/bbox> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/plan-observe/option/license-tier> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/plan> ;
+    tf:inputSchema "{\"properties\":{\"bbox\":{\"description\":\"Optional [west, south, east, north] overriding the place named in q.\",\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},\"license_tier\":{\"enum\":[\"single-org\",\"multi-org\",\"government-wide\",\"public-release\"],\"type\":\"string\"},\"q\":{\"description\":\"What to observe and where, in plain language.\",\"type\":\"string\"}},\"required\":[\"q\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/plan_observation> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Quote ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/plan-observe/option/bbox> a tf:CliOption ;
+    schema:description "Optional [west, south, east, north] overriding the place named in q." ;
+    schema:multipleValues true ;
+    schema:valueName "BBOX" ;
+    schema:valueRequired false ;
+    tf:argumentKey "bbox" ;
+    tf:optionFlag "bbox" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/plan-observe/option/license-tier> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "LICENSE_TIER" ;
+    schema:valueRequired false ;
+    tf:allowedValue "single-org" ;
+    tf:allowedValue "multi-org" ;
+    tf:allowedValue "government-wide" ;
+    tf:allowedValue "public-release" ;
+    tf:argumentKey "license_tier" ;
+    tf:optionFlag "license-tier" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/plan-observe/option/q> a tf:CliOption ;
+    schema:description "What to observe and where, in plain language." ;
+    schema:multipleValues false ;
+    schema:valueName "Q" ;
+    schema:valueRequired true ;
+    tf:argumentKey "q" ;
+    tf:optionFlag "q" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
 <https://terrafabric.world/id/cli/tfab/command/providers-list> a tf:RemoteCliCommand ;
     schema:description "All data providers (space agencies, government bodies, commercial operators, academic and non-profit producers) with their collection counts." ;
     schema:encodingType "application/json" ;
@@ -2322,6 +2503,88 @@ tf:valueType a owl:ObjectProperty ;
     tf:requiresCredential tf:credential-none ;
     tf:usesNetwork false .
 
+<https://terrafabric.world/id/cli/tfab/command/tracks-get> a tf:RemoteCliCommand ;
+    schema:description "The latest position report per aircraft or vessel in an area, as GeoJSON points. Every feature carries its pedigree (tf:pedigree: the originating publisher, source URL and when it was received) and its quality (tf:quality: 95 % horizontal position error in metres, whether that was reported by the emitter or is unknown, and the update interval). properties.datetime is when the position was observed. Collections: adsblol-flights (aircraft, worldwide, needs a bbox of at most about 1,900 km × 1,300 km), digitraffic-marine-ais (vessels, Finnish and nearby Baltic waters), tf-fused-air-tracks (one feature per aircraft across publishers, listing tf:contributors). Use since to poll only what changed." ;
+    schema:encodingType "application/json" ;
+    schema:name "Get live aircraft or vessel tracks" ;
+    tf:commandLine "tfab tracks get" ;
+    tf:example "tfab tracks get --collection adsblol-flights --bbox 4.0,51.5,5.5,52.5" ;
+    tf:example "tfab tracks get --collection digitraffic-marine-ais --bbox 24.0,59.5,26.0,60.5 --since 2026-10-08T12:00:00Z" ;
+    tf:example "tfab tracks get --collection tf-fused-air-tracks --bbox 4.0,51.5,5.5,52.5 --format ndjson" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/tracks-get/option/collection> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/tracks-get/option/bbox> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/tracks-get/option/cursor> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/tracks-get/option/limit> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/tracks-get/option/since> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/tracks> ;
+    tf:inputSchema "{\"properties\":{\"bbox\":{\"description\":\"[west, south, east, north]; required for aircraft.\",\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},\"collection\":{\"enum\":[\"adsblol-flights\",\"digitraffic-marine-ais\",\"tf-fused-air-tracks\"],\"type\":\"string\"},\"cursor\":{\"description\":\"nextCursor from the previous page (trk:<id>).\",\"type\":\"string\"},\"limit\":{\"default\":500,\"maximum\":2000,\"minimum\":1,\"type\":\"integer\"},\"since\":{\"description\":\"Only entities observed after this time.\",\"format\":\"date-time\",\"type\":\"string\"}},\"required\":[\"collection\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/get_tracks> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Item ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/tracks-get/option/bbox> a tf:CliOption ;
+    schema:description "[west, south, east, north]; required for aircraft." ;
+    schema:multipleValues true ;
+    schema:valueName "BBOX" ;
+    schema:valueRequired false ;
+    tf:argumentKey "bbox" ;
+    tf:optionFlag "bbox" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/tracks-get/option/collection> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "COLLECTION" ;
+    schema:valueRequired true ;
+    tf:allowedValue "adsblol-flights" ;
+    tf:allowedValue "digitraffic-marine-ais" ;
+    tf:allowedValue "tf-fused-air-tracks" ;
+    tf:argumentKey "collection" ;
+    tf:optionFlag "collection" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/tracks-get/option/cursor> a tf:CliOption ;
+    schema:description "nextCursor from the previous page (trk:<id>)." ;
+    schema:multipleValues false ;
+    schema:valueName "CURSOR" ;
+    schema:valueRequired false ;
+    tf:argumentKey "cursor" ;
+    tf:optionFlag "cursor" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/tracks-get/option/limit> a tf:CliOption ;
+    schema:maxValue "2000.0"^^xsd:decimal ;
+    schema:minValue "1.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "LIMIT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "limit" ;
+    tf:optionFlag "limit" ;
+    tf:secret false ;
+    tf:valueType xsd:integer .
+
+<https://terrafabric.world/id/cli/tfab/command/tracks-get/option/since> a tf:CliOption ;
+    schema:description "Only entities observed after this time." ;
+    schema:multipleValues false ;
+    schema:valueName "SINCE" ;
+    schema:valueRequired false ;
+    tf:argumentKey "since" ;
+    tf:optionFlag "since" ;
+    tf:secret false ;
+    tf:valueType xsd:dateTime .
+
 <https://terrafabric.world/id/cli/tfab/env/TFAB_AGENT_ID> a tf:EnvironmentVariable ;
     rdfs:comment "Default for --agent-id." ;
     tf:envName "TFAB_AGENT_ID" ;
@@ -2332,6 +2595,16 @@ tf:valueType a owl:ObjectProperty ;
     tf:envName "TFAB_BASE_URL" ;
     tf:secret false .
 
+<https://terrafabric.world/id/cli/tfab/env/TFAB_ENGINE> a tf:EnvironmentVariable ;
+    rdfs:comment "Inference engine for `tfab ask`: ironworks, ollama, vllm, sglang or a base URL." ;
+    tf:envName "TFAB_ENGINE" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_ENGINE_KEY> a tf:EnvironmentVariable ;
+    rdfs:comment "Bearer key for the inference engine (for example `iwx serve --api-key`)." ;
+    tf:envName "TFAB_ENGINE_KEY" ;
+    tf:secret true .
+
 <https://terrafabric.world/id/cli/tfab/env/TFAB_FORMAT> a tf:EnvironmentVariable ;
     rdfs:comment "Default for --format." ;
     tf:envName "TFAB_FORMAT" ;
@@ -2340,6 +2613,11 @@ tf:valueType a owl:ObjectProperty ;
 <https://terrafabric.world/id/cli/tfab/env/TFAB_MCP_ALLOW_SPEND> a tf:EnvironmentVariable ;
     rdfs:comment "Set to true to expose spend commands through `tfab mcp`." ;
     tf:envName "TFAB_MCP_ALLOW_SPEND" ;
+    tf:secret false .
+
+<https://terrafabric.world/id/cli/tfab/env/TFAB_MODEL> a tf:EnvironmentVariable ;
+    rdfs:comment "Model name for `tfab ask`." ;
+    tf:envName "TFAB_MODEL" ;
     tf:secret false .
 
 <https://terrafabric.world/id/cli/tfab/env/TFAB_OAUTH_CLIENT_ID> a tf:EnvironmentVariable ;
@@ -2432,6 +2710,10 @@ tf:valueType a owl:ObjectProperty ;
     tf:exitCode 2 ;
     tf:retryable false .
 
+<https://terrafabric.world/id/cli/tfab/group/artifacts> a tf:CliCommandGroup ;
+    skos:definition "Search indexed artifact locations" ;
+    skos:prefLabel "artifacts" .
+
 <https://terrafabric.world/id/cli/tfab/group/c2> a tf:CliCommandGroup ;
     skos:definition "Mission API: coverage and tasking (credential required)" ;
     skos:prefLabel "c2" .
@@ -2468,6 +2750,10 @@ tf:valueType a owl:ObjectProperty ;
     skos:definition "Predict satellite passes over an area" ;
     skos:prefLabel "passes" .
 
+<https://terrafabric.world/id/cli/tfab/group/plan> a tf:CliCommandGroup ;
+    skos:definition "Turn an observable and a place into a priced plan" ;
+    skos:prefLabel "plan" .
+
 <https://terrafabric.world/id/cli/tfab/group/providers> a tf:CliCommandGroup ;
     skos:definition "Data providers" ;
     skos:prefLabel "providers" .
@@ -2475,6 +2761,10 @@ tf:valueType a owl:ObjectProperty ;
 <https://terrafabric.world/id/cli/tfab/group/quotes> a tf:CliCommandGroup ;
     skos:definition "Price an acquisition" ;
     skos:prefLabel "quotes" .
+
+<https://terrafabric.world/id/cli/tfab/group/tracks> a tf:CliCommandGroup ;
+    skos:definition "Live aircraft and vessel tracks with pedigree and quality" ;
+    skos:prefLabel "tracks" .
 
 <https://terrafabric.world/id/cli/tfab/option/agent-id> a tf:GlobalOption ;
     schema:description "Agent identity sent as x-agent-id; orders are bounded by this agent's mandate." ;

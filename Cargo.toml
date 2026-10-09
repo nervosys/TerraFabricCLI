@@ -1,6 +1,6 @@
 [package]
 name = "terrafabric"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 rust-version = "1.85"
 description = "tfab: agent-first command line for TerraFabric, the agentic geospatial intelligence market (discovery, pricing, orders, C2 tasking and OSINT), with a self-describing ontology and an MCP server"

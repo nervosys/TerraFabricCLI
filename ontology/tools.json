@@ -1613,5 +1613,140 @@
     },
     "name": "predict_passes",
     "title": "Predict satellite passes over an AOI"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Turn an observable and a place into an observation plan, for requests like 'monitor maritime traffic in the Strait of Hormuz'. Returns the resolved area, the data layers that answer the need and a priced bill of materials. Each line is a stored quote valid for 24h; nothing is ordered.",
+    "inputSchema": {
+      "properties": {
+        "bbox": {
+          "description": "Optional [west, south, east, north] overriding the place named in q.",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "license_tier": {
+          "enum": [
+            "single-org",
+            "multi-org",
+            "government-wide",
+            "public-release"
+          ],
+          "type": "string"
+        },
+        "q": {
+          "description": "What to observe and where, in plain language.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "q"
+      ],
+      "type": "object"
+    },
+    "name": "plan_observation",
+    "title": "Plan an observation"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Search the public index of artifact locations (observations, scenes, detections, reports) by area, time, collection and text. Returns GeoJSON features with their source timestamps. Only already indexed public artifacts are returned; follow nextCursor for more.",
+    "inputSchema": {
+      "properties": {
+        "bbox": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "collection": {
+          "type": "string"
+        },
+        "cursor": {
+          "description": "nextCursor from the previous page.",
+          "type": "integer"
+        },
+        "datetime": {
+          "description": "RFC 3339 instant or interval 'start/end'; '..' for open ends.",
+          "type": "string"
+        },
+        "limit": {
+          "default": 25,
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "q": {
+          "description": "Natural-language context, e.g. 'drifting buoys'.",
+          "type": "string"
+        },
+        "text": {
+          "description": "Words that must all appear in the artifact's native metadata.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "name": "search_artifact_locations",
+    "title": "Search indexed artifact locations"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "The latest position report per aircraft or vessel in an area, as GeoJSON points. Every feature carries its pedigree (tf:pedigree: the originating publisher, source URL and when it was received) and its quality (tf:quality: 95 % horizontal position error in metres, whether that was reported by the emitter or is unknown, and the update interval). properties.datetime is when the position was observed. Collections: adsblol-flights (aircraft, worldwide, needs a bbox of at most about 1,900 km × 1,300 km), digitraffic-marine-ais (vessels, Finnish and nearby Baltic waters), tf-fused-air-tracks (one feature per aircraft across publishers, listing tf:contributors). Use since to poll only what changed.",
+    "inputSchema": {
+      "properties": {
+        "bbox": {
+          "description": "[west, south, east, north]; required for aircraft.",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "collection": {
+          "enum": [
+            "adsblol-flights",
+            "digitraffic-marine-ais",
+            "tf-fused-air-tracks"
+          ],
+          "type": "string"
+        },
+        "cursor": {
+          "description": "nextCursor from the previous page (trk:<id>).",
+          "type": "string"
+        },
+        "limit": {
+          "default": 500,
+          "maximum": 2000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "since": {
+          "description": "Only entities observed after this time.",
+          "format": "date-time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "collection"
+      ],
+      "type": "object"
+    },
+    "name": "get_tracks",
+    "title": "Get live aircraft or vessel tracks"
   }
 ]

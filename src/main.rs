@@ -8,6 +8,7 @@
 //! - Nothing that commits spend runs without `--yes`; `--dry-run` shows the
 //!   exact request instead of sending it; secrets are never printed.
 
+mod agent;
 mod args;
 mod client;
 mod mcp;
@@ -107,6 +108,51 @@ pub fn cli() -> clap::Command {
                             .long("args")
                             .value_name("JSON")
                             .help("Tool arguments as a JSON object"),
+                    ),
+                Local::Ask => c
+                    .arg(
+                        Arg::new("question")
+                            .required(true)
+                            .num_args(1..)
+                            .help("The question, in plain language"),
+                    )
+                    .arg(
+                        Arg::new("engine")
+                            .long("engine")
+                            .env("TFAB_ENGINE")
+                            .value_name("NAME|URL")
+                            .help("ironworks, ollama, vllm, sglang, or the engine's base URL (default: the first local engine that answers)"),
+                    )
+                    .arg(
+                        Arg::new("model")
+                            .long("model")
+                            .env("TFAB_MODEL")
+                            .value_name("MODEL")
+                            .help("Model to use (default: the first local model the engine lists)"),
+                    )
+                    .arg(
+                        Arg::new("max-steps")
+                            .long("max-steps")
+                            .value_name("N")
+                            .default_value("8")
+                            .value_parser(clap::value_parser!(u8).range(1..=24))
+                            .help("Most model turns before stopping"),
+                    )
+                    .arg(
+                        Arg::new("max-tokens")
+                            .long("max-tokens")
+                            .value_name("N")
+                            .default_value("4096")
+                            .value_parser(clap::value_parser!(u32).range(64..=32768))
+                            .help("Most tokens the model may generate per turn"),
+                    )
+                    .arg(
+                        Arg::new("engine-timeout")
+                            .long("engine-timeout")
+                            .value_name("SECONDS")
+                            .default_value("300")
+                            .value_parser(clap::value_parser!(u64).range(5..=3600))
+                            .help("Seconds allowed for one model call"),
                     ),
                 Local::Completions => c.arg(
                     Arg::new("shell")
@@ -451,6 +497,52 @@ fn local(which: Local, m: &ArgMatches, g: &Globals) -> Result<(), Problem> {
                 }
             }
         }
+        Local::Ask => {
+            let question = m
+                .get_many::<String>("question")
+                .map(|v| v.cloned().collect::<Vec<_>>().join(" "))
+                .unwrap_or_default();
+            if question.trim().is_empty() || question.chars().count() > 4000 {
+                return Err(Problem::new(
+                    "invalid-input",
+                    "Invalid question",
+                    "the question must be 1–4000 characters",
+                ));
+            }
+            let o = agent::Options {
+                question: question.trim().to_string(),
+                engine: m.get_one::<String>("engine").cloned(),
+                model: m.get_one::<String>("model").cloned(),
+                max_steps: *m.get_one::<u8>("max-steps").expect("default") as usize,
+                max_tokens: *m.get_one::<u32>("max-tokens").expect("default"),
+                engine_timeout: Duration::from_secs(
+                    *m.get_one::<u64>("engine-timeout").expect("default"),
+                ),
+            };
+            let client = Client::new(&g.base, g.agent_id.clone(), g.timeout)?;
+            if g.dry_run {
+                return output::emit(&agent::preview(&client, &o), g.format);
+            }
+            let engine = agent::Engine::resolve(&o)?;
+            let result = agent::run(&engine, &o, &|c, input| client.call(&c.tool, input, c.auth))?;
+            if g.format == Format::Text {
+                println!(
+                    "{}",
+                    output::printable(result["answer"].as_str().unwrap_or_default())
+                );
+                let steps = result["steps"].as_array().map(Vec::len).unwrap_or(0);
+                eprintln!(
+                    "\n[{} · {} · {steps} lookup{} · {} tokens]",
+                    engine.name,
+                    engine.model,
+                    if steps == 1 { "" } else { "s" },
+                    result["usage"]["input_tokens"].as_u64().unwrap_or(0)
+                        + result["usage"]["output_tokens"].as_u64().unwrap_or(0)
+                );
+                return Ok(());
+            }
+            output::emit(&result, g.format)
+        }
         Local::Mcp => mcp::serve(g.base.clone(), g.agent_id.clone(), g.timeout),
         Local::Completions => {
             let shell = *m
@@ -583,6 +675,9 @@ pub fn guide_text() -> String {
     s.push_str("- Never supply a principal token you were not explicitly given for that action; `orders approve` is the human principal's decision.\n");
     s.push_str("- Pass secrets as `env:NAME` or `file:PATH`. The CLI never prints them.\n");
     s.push_str("- Mission (C2) commands need `TFAB_TOKEN` or OAuth client credentials (`TFAB_OAUTH_*`).\n\n");
+    s.push_str("## Your own inference engine\n\n");
+    s.push_str("- `tfab ask \"<question>\"` runs an agent on an engine you operate (IronWorks, Ollama, vLLM, SGLang or any OpenAI-compatible endpoint with tool calling) with TerraFabric's public read-only tools. The conversation stays on your engine; TerraFabric receives only tool calls. It can search, plan and quote, never order or task.\n");
+    s.push_str("- To wire your own agent instead: `GET /v1/agent/tools?format=openai` returns the tools ready for a chat-completions request, each invoked with `POST /v1/agent/tools/{name}`; `tfab mcp` and the server's `/mcp` serve the same tools over MCP.\n\n");
     s.push_str("## Commands\n\n");
     for c in spec::commands() {
         s.push_str(&format!(
