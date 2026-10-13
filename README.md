@@ -39,6 +39,8 @@ tfab collections search --q radar --bbox 4.0,51.9,4.3,52.0 --limit 5
 | `osint` | `sources`, `assess`, `watch-create`, `watch-get`, `thermal-analyze`, `thermal-save`, `thermal-get`, `thermal-delete` |
 | `tracks` | `get` (live aircraft and vessel positions with pedigree and quality) |
 | `plan` | `observe` |
+| `places` | `find` (place names worldwide; add region or country after a comma), `describe` (where a point is) |
+| `addresses` | `find` (street address, then town or postcode) |
 | `artifacts` | `search` |
 | local | `describe`, `tools`, `schema`, `guide`, `exit-codes`, `config`, `doctor`, `call`, `ask`, `mcp`, `completions` |
 

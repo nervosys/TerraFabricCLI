@@ -13,7 +13,7 @@
     dct:description "Describes command-line programs for agents: commands, their inputs, side effects, required credentials, results and exit statuses, linked to the TerraFabric ontology's tools and classes." ;
     dct:title "TerraFabric CLI Ontology" ;
     owl:imports <https://terrafabric.world/ont> ;
-    owl:versionInfo "0.1.4" .
+    owl:versionInfo "0.1.5" .
 
 tf:CliCommand a owl:Class ;
     rdfs:comment "One invocable command line. Its inputs are tf:CliOption values; running it has one tf:SideEffect." ;
@@ -371,7 +371,7 @@ tf:valueType a owl:ObjectProperty ;
     schema:description "tfab: agent-first command line for TerraFabric, the agentic geospatial intelligence market (discovery, pricing, orders, C2 tasking and OSINT), with a self-describing ontology and an MCP server" ;
     schema:isPartOf <https://terrafabric.world/> ;
     schema:name "tfab" ;
-    schema:softwareVersion "0.1.4" ;
+    schema:softwareVersion "0.1.5" ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/collections-search> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/collections-get> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/items-search> ;
@@ -398,6 +398,9 @@ tf:valueType a owl:ObjectProperty ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/graph-sparql> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/passes-predict> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/plan-observe> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/places-find> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/addresses-find> ;
+    tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/places-describe> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/artifacts-search> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/tracks-get> ;
     tf:hasCommand <https://terrafabric.world/id/cli/tfab/command/describe> ;
@@ -418,6 +421,8 @@ tf:valueType a owl:ObjectProperty ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/ontology> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/graph> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/plan> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/places> ;
+    tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/addresses> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/artifacts> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/tracks> ;
     tf:hasCommandGroup <https://terrafabric.world/id/cli/tfab/group/quotes> ;
@@ -448,6 +453,50 @@ tf:valueType a owl:ObjectProperty ;
     tf:supportsFormat tf:output-json ;
     tf:supportsFormat tf:output-ndjson ;
     tf:supportsFormat tf:output-text .
+
+<https://terrafabric.world/id/cli/tfab/command/addresses-find> a tf:RemoteCliCommand ;
+    schema:description "Locate a street address: house number and street, then the town and/or postcode after a comma ('1600 Pennsylvania Avenue NW, Washington, DC 20500'). Covers the openly licensed addresses published by Overture Maps (about 290 million, in 26 countries including the United States, most of Europe, Canada (Quebec), Japan and Taiwan). match is 'exact' only when the number and every street word agree; 'street' means the number was not found and the street's centre is given." ;
+    schema:encodingType "application/json" ;
+    schema:name "Find a street address" ;
+    tf:commandLine "tfab addresses find" ;
+    tf:example "tfab addresses find --q '1600 Pennsylvania Avenue NW, Washington, DC 20500'" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/addresses-find/option/q> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/addresses-find/option/limit> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/addresses> ;
+    tf:inputSchema "{\"properties\":{\"limit\":{\"default\":5,\"maximum\":20,\"minimum\":1,\"type\":\"integer\"},\"q\":{\"type\":\"string\"}},\"required\":[\"q\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/find_address> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:StreetAddress ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/addresses-find/option/limit> a tf:CliOption ;
+    schema:maxValue "20.0"^^xsd:decimal ;
+    schema:minValue "1.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "LIMIT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "limit" ;
+    tf:optionFlag "limit" ;
+    tf:secret false ;
+    tf:valueType xsd:integer .
+
+<https://terrafabric.world/id/cli/tfab/command/addresses-find/option/q> a tf:CliOption ;
+    schema:multipleValues false ;
+    schema:valueName "Q" ;
+    schema:valueRequired true ;
+    tf:argumentKey "q" ;
+    tf:optionFlag "q" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
 
 <https://terrafabric.world/id/cli/tfab/command/artifacts-search> a tf:RemoteCliCommand ;
     schema:description "Search the public index of artifact locations (observations, scenes, detections, reports) by area, time, collection and text. Returns GeoJSON features with their source timestamps. Only already indexed public artifacts are returned; follow nextCursor for more." ;
@@ -821,13 +870,14 @@ tf:valueType a owl:ObjectProperty ;
     tf:example "tfab c2 task --input tasking.json --yes" ;
     tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/requirement> ;
     tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/collection> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/decision> ;
     tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/marking> ;
     tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/priority> ;
     tf:hasOption <https://terrafabric.world/id/cli/tfab/command/c2-task/option/requester> ;
     tf:hasSideEffect tf:effect-commits-spend ;
     tf:idempotent false ;
     tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/c2> ;
-    tf:inputSchema "{\"properties\":{\"collection\":{\"type\":\"string\"},\"marking\":{\"type\":\"string\"},\"priority\":{\"enum\":[\"standard\",\"priority\",\"urgent\",\"flash\"],\"type\":\"string\"},\"requester\":{\"type\":\"string\"},\"requirement\":{\"properties\":{\"all_weather\":{\"description\":\"Require collection through cloud.\",\"type\":\"boolean\"},\"aoi\":{\"description\":\"Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.\",\"oneOf\":[{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},{\"type\":\"object\"}]},\"budget_usd\":{\"type\":\"number\"},\"end\":{\"description\":\"Window end (default start + 72h).\",\"format\":\"date-time\",\"type\":\"string\"},\"include_commercial\":{\"default\":true,\"type\":\"boolean\"},\"include_free\":{\"default\":true,\"type\":\"boolean\"},\"intent\":{\"description\":\"Plain-language information need.\",\"type\":\"string\"},\"license_tier\":{\"enum\":[\"single-org\",\"multi-org\",\"government-wide\",\"public-release\"],\"type\":\"string\"},\"max_gsd_m\":{\"description\":\"Maximum acceptable ground sample distance (m).\",\"type\":\"number\"},\"max_latency_hours\":{\"type\":\"number\"},\"modalities\":{\"items\":{\"enum\":[\"earth-observation\",\"optical\",\"multispectral\",\"hyperspectral\",\"thermal\",\"sar\",\"radar-altimetry\",\"lidar\",\"elevation\",\"atmospheric\",\"landcover\",\"rf\",\"ais\",\"video\",\"3d\",\"vector\",\"adsb\",\"weather-station\",\"ocean-in-situ\",\"nwp\",\"network\",\"cellular\",\"wardriving\",\"mobility\",\"trade\",\"logistics\",\"installations\",\"events\",\"finance\",\"markets\",\"minerals\",\"industry\",\"energy\",\"ai-compute\",\"robotics\",\"microwave\",\"bathymetry\",\"hydrography\",\"ocean-model\",\"acoustic\",\"soil\",\"hydrology\",\"aviation\",\"gnss\",\"space-weather\",\"magnetic\",\"gravity\",\"seismic\",\"orbital\",\"weather-radar\",\"defense-industry\"],\"type\":\"string\"},\"type\":\"array\"},\"night\":{\"description\":\"Require night capability.\",\"type\":\"boolean\"},\"start\":{\"description\":\"Window start (default now).\",\"format\":\"date-time\",\"type\":\"string\"}},\"required\":[\"aoi\"],\"type\":\"object\"}},\"required\":[\"requirement\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:inputSchema "{\"properties\":{\"collection\":{\"type\":\"string\"},\"decision\":{\"description\":\"Who proposed and who approved the request, recorded as asserted and written to the audit log. Identifiers are opaque: no names or email addresses. Only a person may approve.\",\"properties\":{\"approved_at\":{\"format\":\"date-time\",\"type\":\"string\"},\"approved_by\":{\"properties\":{\"id\":{\"type\":\"string\"},\"kind\":{\"enum\":[\"person\"],\"type\":\"string\"}},\"required\":[\"kind\",\"id\"],\"type\":\"object\"},\"authority\":{\"type\":\"string\"},\"proposed_by\":{\"properties\":{\"id\":{\"type\":\"string\"},\"kind\":{\"enum\":[\"person\",\"agent\",\"rule\"],\"type\":\"string\"}},\"required\":[\"kind\",\"id\"],\"type\":\"object\"}},\"required\":[\"proposed_by\",\"approved_by\",\"authority\",\"approved_at\"],\"type\":\"object\"},\"marking\":{\"type\":\"string\"},\"priority\":{\"enum\":[\"standard\",\"priority\",\"urgent\",\"flash\"],\"type\":\"string\"},\"requester\":{\"type\":\"string\"},\"requirement\":{\"properties\":{\"all_weather\":{\"description\":\"Require collection through cloud.\",\"type\":\"boolean\"},\"aoi\":{\"description\":\"Area of interest: a GeoJSON Polygon/MultiPolygon/Feature, or a [west, south, east, north] bbox in WGS84 degrees.\",\"oneOf\":[{\"items\":{\"type\":\"number\"},\"maxItems\":4,\"minItems\":4,\"type\":\"array\"},{\"type\":\"object\"}]},\"budget_usd\":{\"type\":\"number\"},\"end\":{\"description\":\"Window end (default start + 72h).\",\"format\":\"date-time\",\"type\":\"string\"},\"include_commercial\":{\"default\":true,\"type\":\"boolean\"},\"include_free\":{\"default\":true,\"type\":\"boolean\"},\"intent\":{\"description\":\"Plain-language information need.\",\"type\":\"string\"},\"license_tier\":{\"enum\":[\"single-org\",\"multi-org\",\"government-wide\",\"public-release\"],\"type\":\"string\"},\"max_gsd_m\":{\"description\":\"Maximum acceptable ground sample distance (m).\",\"type\":\"number\"},\"max_latency_hours\":{\"type\":\"number\"},\"modalities\":{\"items\":{\"enum\":[\"earth-observation\",\"optical\",\"multispectral\",\"hyperspectral\",\"thermal\",\"sar\",\"radar-altimetry\",\"lidar\",\"elevation\",\"atmospheric\",\"landcover\",\"rf\",\"ais\",\"video\",\"3d\",\"vector\",\"adsb\",\"weather-station\",\"ocean-in-situ\",\"nwp\",\"network\",\"cellular\",\"wardriving\",\"mobility\",\"trade\",\"logistics\",\"installations\",\"events\",\"finance\",\"markets\",\"minerals\",\"industry\",\"energy\",\"ai-compute\",\"robotics\",\"microwave\",\"bathymetry\",\"hydrography\",\"ocean-model\",\"acoustic\",\"soil\",\"hydrology\",\"aviation\",\"gnss\",\"space-weather\",\"magnetic\",\"gravity\",\"seismic\",\"orbital\",\"weather-radar\",\"defense-industry\"],\"type\":\"string\"},\"type\":\"array\"},\"night\":{\"description\":\"Require night capability.\",\"type\":\"boolean\"},\"start\":{\"description\":\"Window start (default now).\",\"format\":\"date-time\",\"type\":\"string\"}},\"required\":[\"aoi\"],\"type\":\"object\"}},\"required\":[\"requirement\"],\"type\":\"object\"}"^^rdf:JSON ;
     tf:invokesTool <https://terrafabric.world/id/tool/submit_tasking> ;
     tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
     tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
@@ -851,6 +901,16 @@ tf:valueType a owl:ObjectProperty ;
     tf:optionFlag "collection" ;
     tf:secret false ;
     tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/c2-task/option/decision> a tf:CliOption ;
+    schema:description "Who proposed and who approved the request, recorded as asserted and written to the audit log. Identifiers are opaque: no names or email addresses. Only a person may approve." ;
+    schema:multipleValues false ;
+    schema:valueName "DECISION" ;
+    schema:valueRequired false ;
+    tf:argumentKey "decision" ;
+    tf:optionFlag "decision" ;
+    tf:secret false ;
+    tf:valueType rdf:JSON .
 
 <https://terrafabric.world/id/cli/tfab/command/c2-task/option/marking> a tf:CliOption ;
     schema:multipleValues false ;
@@ -2290,6 +2350,144 @@ tf:valueType a owl:ObjectProperty ;
     tf:secret false ;
     tf:valueType xsd:dateTime .
 
+<https://terrafabric.world/id/cli/tfab/command/places-describe> a tf:RemoteCliCommand ;
+    schema:description "Name the nearest places to a point and give a one-line description such as '12 km NE of Austin, Texas, United States'. Distances are great-circle; being inside an area is not implied." ;
+    schema:encodingType "application/json" ;
+    schema:name "Describe where a point is" ;
+    tf:commandLine "tfab places describe" ;
+    tf:example "tfab places describe --lat 30.27 --lon -97.74" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/places-describe/option/lat> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/places-describe/option/lon> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/places-describe/option/radius-km> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/places> ;
+    tf:inputSchema "{\"properties\":{\"lat\":{\"maximum\":90,\"minimum\":-90,\"type\":\"number\"},\"lon\":{\"maximum\":180,\"minimum\":-180,\"type\":\"number\"},\"radius_km\":{\"default\":10,\"maximum\":50,\"minimum\":0.1,\"type\":\"number\"}},\"required\":[\"lat\",\"lon\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/describe_location> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Place ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/places-describe/option/lat> a tf:CliOption ;
+    schema:maxValue "90.0"^^xsd:decimal ;
+    schema:minValue "-90.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "LAT" ;
+    schema:valueRequired true ;
+    tf:argumentKey "lat" ;
+    tf:optionFlag "lat" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/places-describe/option/lon> a tf:CliOption ;
+    schema:maxValue "180.0"^^xsd:decimal ;
+    schema:minValue "-180.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "LON" ;
+    schema:valueRequired true ;
+    tf:argumentKey "lon" ;
+    tf:optionFlag "lon" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/places-describe/option/radius-km> a tf:CliOption ;
+    schema:maxValue "50.0"^^xsd:decimal ;
+    schema:minValue "0.1"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "RADIUS_KM" ;
+    schema:valueRequired false ;
+    tf:argumentKey "radius_km" ;
+    tf:optionFlag "radius-km" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/places-find> a tf:RemoteCliCommand ;
+    schema:description "Look up a named place worldwide (country, region, town, neighbourhood, sea, strait, island, mountain, airport, port, postcode ...) in TerraFabric's gazetteer of about twenty million names from OpenStreetMap (via Overture Maps) and GeoNames. Names match exactly after folding case, accents and punctuation; add the region or country after a comma to pick one namesake ('Paris, Texas'). Each result has a point, a bbox (bbox_estimated is true when only a point is known) and its context. Use the bbox as the area for search_items or plan_observation." ;
+    schema:encodingType "application/json" ;
+    schema:name "Find a place by name" ;
+    tf:commandLine "tfab places find" ;
+    tf:example "tfab places find --q 'Paris, Texas'" ;
+    tf:example "tfab places find --q 'Port Said' --kind port" ;
+    tf:example "tfab places find --q Springfield --near -89.6,39.8" ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/places-find/option/q> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/places-find/option/country> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/places-find/option/kind> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/places-find/option/limit> ;
+    tf:hasOption <https://terrafabric.world/id/cli/tfab/command/places-find/option/near> ;
+    tf:hasSideEffect tf:effect-read-only ;
+    tf:idempotent true ;
+    tf:inCommandGroup <https://terrafabric.world/id/cli/tfab/group/places> ;
+    tf:inputSchema "{\"properties\":{\"country\":{\"description\":\"Comma-separated ISO 3166-1 alpha-2 codes to keep.\",\"type\":\"string\"},\"kind\":{\"description\":\"Comma-separated kinds to keep, e.g. 'locality', 'airport', 'port', 'strait', 'postcode'.\",\"type\":\"string\"},\"limit\":{\"default\":5,\"maximum\":50,\"minimum\":1,\"type\":\"integer\"},\"near\":{\"description\":\"[lon, lat] to prefer nearby namesakes.\",\"items\":{\"type\":\"number\"},\"maxItems\":2,\"minItems\":2,\"type\":\"array\"},\"q\":{\"description\":\"Place name, optionally followed by region and/or country.\",\"type\":\"string\"}},\"required\":[\"q\"],\"type\":\"object\"}"^^rdf:JSON ;
+    tf:invokesTool <https://terrafabric.world/id/tool/find_place> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/ok> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/internal> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/usage> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/not-found> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/rate-limited> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/unavailable> ;
+    tf:mayExitWith <https://terrafabric.world/id/cli/tfab/exit/invalid-input> ;
+    tf:requiresCredential tf:credential-none ;
+    tf:returnsType tf:Place ;
+    tf:usesNetwork true .
+
+<https://terrafabric.world/id/cli/tfab/command/places-find/option/country> a tf:CliOption ;
+    schema:description "Comma-separated ISO 3166-1 alpha-2 codes to keep." ;
+    schema:multipleValues false ;
+    schema:valueName "COUNTRY" ;
+    schema:valueRequired false ;
+    tf:argumentKey "country" ;
+    tf:optionFlag "country" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/places-find/option/kind> a tf:CliOption ;
+    schema:description "Comma-separated kinds to keep, e.g. 'locality', 'airport', 'port', 'strait', 'postcode'." ;
+    schema:multipleValues false ;
+    schema:valueName "KIND" ;
+    schema:valueRequired false ;
+    tf:argumentKey "kind" ;
+    tf:optionFlag "kind" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
+<https://terrafabric.world/id/cli/tfab/command/places-find/option/limit> a tf:CliOption ;
+    schema:maxValue "50.0"^^xsd:decimal ;
+    schema:minValue "1.0"^^xsd:decimal ;
+    schema:multipleValues false ;
+    schema:valueName "LIMIT" ;
+    schema:valueRequired false ;
+    tf:argumentKey "limit" ;
+    tf:optionFlag "limit" ;
+    tf:secret false ;
+    tf:valueType xsd:integer .
+
+<https://terrafabric.world/id/cli/tfab/command/places-find/option/near> a tf:CliOption ;
+    schema:description "[lon, lat] to prefer nearby namesakes." ;
+    schema:multipleValues true ;
+    schema:valueName "NEAR" ;
+    schema:valueRequired false ;
+    tf:argumentKey "near" ;
+    tf:optionFlag "near" ;
+    tf:secret false ;
+    tf:valueType xsd:decimal .
+
+<https://terrafabric.world/id/cli/tfab/command/places-find/option/q> a tf:CliOption ;
+    schema:description "Place name, optionally followed by region and/or country." ;
+    schema:multipleValues false ;
+    schema:valueName "Q" ;
+    schema:valueRequired true ;
+    tf:argumentKey "q" ;
+    tf:optionFlag "q" ;
+    tf:secret false ;
+    tf:valueType xsd:string .
+
 <https://terrafabric.world/id/cli/tfab/command/plan-observe> a tf:RemoteCliCommand ;
     schema:description "Turn an observable and a place into an observation plan, for requests like 'monitor maritime traffic in the Strait of Hormuz'. Returns the resolved area, the data layers that answer the need and a priced bill of materials. Each line is a stored quote valid for 24h; nothing is ordered." ;
     schema:encodingType "application/json" ;
@@ -2710,6 +2908,10 @@ tf:valueType a owl:ObjectProperty ;
     tf:exitCode 2 ;
     tf:retryable false .
 
+<https://terrafabric.world/id/cli/tfab/group/addresses> a tf:CliCommandGroup ;
+    skos:definition "Find street addresses" ;
+    skos:prefLabel "addresses" .
+
 <https://terrafabric.world/id/cli/tfab/group/artifacts> a tf:CliCommandGroup ;
     skos:definition "Search indexed artifact locations" ;
     skos:prefLabel "artifacts" .
@@ -2749,6 +2951,10 @@ tf:valueType a owl:ObjectProperty ;
 <https://terrafabric.world/id/cli/tfab/group/passes> a tf:CliCommandGroup ;
     skos:definition "Predict satellite passes over an area" ;
     skos:prefLabel "passes" .
+
+<https://terrafabric.world/id/cli/tfab/group/places> a tf:CliCommandGroup ;
+    skos:definition "Find places by name and describe where a point is" ;
+    skos:prefLabel "places" .
 
 <https://terrafabric.world/id/cli/tfab/group/plan> a tf:CliCommandGroup ;
     skos:definition "Turn an observable and a place into a priced plan" ;

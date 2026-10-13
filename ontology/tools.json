@@ -660,6 +660,63 @@
         "collection": {
           "type": "string"
         },
+        "decision": {
+          "description": "Who proposed and who approved the request, recorded as asserted and written to the audit log. Identifiers are opaque: no names or email addresses. Only a person may approve.",
+          "properties": {
+            "approved_at": {
+              "format": "date-time",
+              "type": "string"
+            },
+            "approved_by": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "person"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "id"
+              ],
+              "type": "object"
+            },
+            "authority": {
+              "type": "string"
+            },
+            "proposed_by": {
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "person",
+                    "agent",
+                    "rule"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "id"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "proposed_by",
+            "approved_by",
+            "authority",
+            "approved_at"
+          ],
+          "type": "object"
+        },
         "marking": {
           "type": "string"
         },
@@ -1652,6 +1709,110 @@
     },
     "name": "plan_observation",
     "title": "Plan an observation"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Look up a named place worldwide (country, region, town, neighbourhood, sea, strait, island, mountain, airport, port, postcode ...) in TerraFabric's gazetteer of about twenty million names from OpenStreetMap (via Overture Maps) and GeoNames. Names match exactly after folding case, accents and punctuation; add the region or country after a comma to pick one namesake ('Paris, Texas'). Each result has a point, a bbox (bbox_estimated is true when only a point is known) and its context. Use the bbox as the area for search_items or plan_observation.",
+    "inputSchema": {
+      "properties": {
+        "country": {
+          "description": "Comma-separated ISO 3166-1 alpha-2 codes to keep.",
+          "type": "string"
+        },
+        "kind": {
+          "description": "Comma-separated kinds to keep, e.g. 'locality', 'airport', 'port', 'strait', 'postcode'.",
+          "type": "string"
+        },
+        "limit": {
+          "default": 5,
+          "maximum": 50,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "near": {
+          "description": "[lon, lat] to prefer nearby namesakes.",
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "q": {
+          "description": "Place name, optionally followed by region and/or country.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "q"
+      ],
+      "type": "object"
+    },
+    "name": "find_place",
+    "title": "Find a place by name"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Locate a street address: house number and street, then the town and/or postcode after a comma ('1600 Pennsylvania Avenue NW, Washington, DC 20500'). Covers the openly licensed addresses published by Overture Maps (about 290 million, in 26 countries including the United States, most of Europe, Canada (Quebec), Japan and Taiwan). match is 'exact' only when the number and every street word agree; 'street' means the number was not found and the street's centre is given.",
+    "inputSchema": {
+      "properties": {
+        "limit": {
+          "default": 5,
+          "maximum": 20,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "q": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "q"
+      ],
+      "type": "object"
+    },
+    "name": "find_address",
+    "title": "Find a street address"
+  },
+  {
+    "annotations": {
+      "openWorldHint": false,
+      "readOnlyHint": true
+    },
+    "description": "Name the nearest places to a point and give a one-line description such as '12 km NE of Austin, Texas, United States'. Distances are great-circle; being inside an area is not implied.",
+    "inputSchema": {
+      "properties": {
+        "lat": {
+          "maximum": 90,
+          "minimum": -90,
+          "type": "number"
+        },
+        "lon": {
+          "maximum": 180,
+          "minimum": -180,
+          "type": "number"
+        },
+        "radius_km": {
+          "default": 10,
+          "maximum": 50,
+          "minimum": 0.1,
+          "type": "number"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "type": "object"
+    },
+    "name": "describe_location",
+    "title": "Describe where a point is"
   },
   {
     "annotations": {
